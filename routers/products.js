@@ -655,10 +655,10 @@ router.post("/view/add_products", auth, upload.single("image"), async (req, res)
 
 
         
-        const { name, category, brand, year_model, unit, plate_number, product_code,  file_number, chasis_number, Motor_number, ORCR, make_series, TOU } = req.body
+        const { name, category, brand, year_model, unit, plate_number, product_code,  file_number, chasis_number, Motor_number, ORCR, make_series, TOU, frame_number, engine_number } = req.body
         const image = req.file.filename;
         
-        const data = new product({ image, name, category, brand, year_model, unit, plate_number, product_code, file_number, chasis_number, motor_number: Motor_number, ORCR, make_series, typeofunits:TOU });
+        const data = new product({ image, name, category, brand, year_model, unit, plate_number, product_code, file_number, chasis_number, motor_number: Motor_number, ORCR, make_series, typeofunits:TOU, frame_number, engine_number });
         const products_data = await data.save()
 
 
@@ -751,11 +751,11 @@ router.get("/view/:id", auth, async (req, res) => {
 
 router.post("/view/:id", auth, upload.single("image"), async (req, res) => {
     try {
-        console.log("hello");
+        
         const _id = req.params.id;
         const data = await product.findById(_id)
-
-        const { image, name, category, brand, sku, unit, alertquantity, product_code,  warehouse, primary_ItemCode, second_ItemCode, second_unit, maxPerUnit, MaxPerProduct, CBM } = req.body
+     
+        const { image, name, category, brand, year_model, unit, plate_number, product_code,  file_number, chasis_number, ORCR, Motor_number, TOU, frame_number, engine_number, make_series } = req.body
 
         if (req.file) {
             data.image = req.file.filename
@@ -763,17 +763,18 @@ router.post("/view/:id", auth, upload.single("image"), async (req, res) => {
         data.name = name
         data.category = category
         data.brand = brand
-        data.sku = sku
+        data.year_model = year_model
         data.unit = unit
-        data.alertquantity = alertquantity
+        data.plate_number = plate_number
         data.product_code = product_code
-        data.warehouse = warehouse
-        data.primary_code = primary_ItemCode
-        data.secondary_code = second_ItemCode
-        data.secondary_unit = second_unit
-        data.maxStocks = MaxPerProduct
-        data.maxProdPerUnit = maxPerUnit
-        data.CBM = CBM
+        data.file_number = file_number
+        data.chasis_number = chasis_number
+        data.motor_number = Motor_number
+        data.ORCR = ORCR
+        data.make_series = make_series
+        data.typeofunits = TOU
+        data.frame_number = frame_number
+        data.engine_number = engine_number
        
 
         const new_data = await data.save();

@@ -114,7 +114,7 @@ const product_data = new mongoose.Schema({
     },
     category: {
         type: String,
-        required: true
+        // required: true
     },
     brand: {
         type: String,
@@ -153,6 +153,12 @@ const product_data = new mongoose.Schema({
     typeofunits:{
         type: String
     },
+    frame_number: {
+        type: String
+    }, 
+    engine_number : {
+        type: String
+    }
     
     
 })
@@ -184,9 +190,14 @@ const warehouse_data = new mongoose.Schema({
                 type: String,
                 default: "no product"
             },
-            product_stock: {
-                type: Number,
-                default: 0
+            status: {
+                type: String
+            },
+            date:{
+                type: String
+            },
+            note:{
+                type: String
             },
             product_code: {
                 type: String
@@ -206,7 +217,7 @@ const warehouse_data = new mongoose.Schema({
             idfromtransaction: {
                 type: String
             },
-            images: {
+            product_id: {
                 type: String
             }
         }
@@ -536,14 +547,23 @@ const purchases_data_finished = new mongoose.Schema({
         type: String,
     },
     product:[{
+        product_id:{
+            type: String
+        },
         product_name: {
             type: String
         },
         product_code: {
             type: String
         },
-        quantity: {
-            type: Number
+        status: {
+            type: String
+        },
+        date: {
+            type: String
+        },
+        note:{
+            type: String
         },
         standard_unit: {
             type: String
@@ -562,9 +582,6 @@ const purchases_data_finished = new mongoose.Schema({
             type: String
         },
         idfromtransaction: {
-            type: String
-        },
-        images: {
             type: String
         }
     }],
@@ -1579,10 +1596,25 @@ const adjustment_data_finished = new mongoose.Schema({
         type: String
     },
     product:[{
+        product_id:{
+            type: String
+        },
         product_name:{
             type: String
         },
         product_code:{
+            type: String
+        },
+        status:{
+            type: String
+        },
+        from_status: {
+            type: String
+        },
+        date:{
+            type: String
+        },
+        note: {
             type: String
         },
         level:{
@@ -1591,29 +1623,23 @@ const adjustment_data_finished = new mongoose.Schema({
         rack:{
             type: String
         },
-        stockBefore:{
-            type: Number
+        unit:{
+            type: String
         },
         types:{
             type: String
         },
-        adjust_qty:{
-            type : Number
-        },
-        new_adjust_qty:{
-            type: Number
-        },
         room_names:{
             type: String
-        },
-        maxPerUnit: {
-            type: Number
         },
         invoice: {
             type: String
         },
         idfromtransaction: {
             type: String
+        },
+        warehouse_detl_id: {
+            type : String
         }
     }],
     note:{

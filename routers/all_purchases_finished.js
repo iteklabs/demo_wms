@@ -63,7 +63,7 @@ router.get("/view", auth, async (req, res) => {
                 batch_code: { $first: "$batch_code" },
                 expiry_date: { $first: "$expiry_date" },
                 suppliers_docs: { $first: "$suppliers_docs" },
-                total_product_quantity: { $sum: "$product.quantity" },
+                status: { $addToSet: "$product.status" },
                 level: { $addToSet: "$product.level" },
                 rack: { $addToSet: "$product.rack" },
                 pallet: { $addToSet: "$product.pallet" },
@@ -128,7 +128,7 @@ router.get("/view", auth, async (req, res) => {
                 batch_code: { $first: "$batch_code" },
                 expiry_date: { $first: "$expiry_date" },
                 suppliers_docs: { $first: "$suppliers_docs" },
-                total_product_quantity: { $sum: "$product.quantity" },
+                status: { $addToSet: "$product.status" },
                 level: { $addToSet: "$product.level" },
                 rack: { $addToSet: "$product.rack" },
                 pallet: { $addToSet: "$product.pallet" },
@@ -151,7 +151,7 @@ router.get("/view", auth, async (req, res) => {
                 batch_code: 1,
                 expiry_date: 1,
                 suppliers_docs: 1,
-                total_product_quantity: 1,
+                status: 1,
                 level: 1,
                 rack: 1,
                 pallet: 1,
@@ -386,25 +386,32 @@ router.post("/view/add_purchases", auth, async (req, res) => {
     try {
     
         const { invoice, date, warehouse_name, suppliers, note, prod_name} = req.body
-        
+        // res.json(req.body);
+        // return
         if(typeof prod_name == "string"){
             var product_name_array = [req.body.prod_name]
             var proudct_code_array = [req.body.prod_code]
-            var quantity_array = [req.body.prod_qty]
+            var status_array = [req.body.status]
+            var txtDate_array =  [req.body.txtDate]
+            var txtNote_array =  [req.body.txtNote]
             var prod_unit_array =  [req.body.prod_unit]
             var prod_level_array = [req.body.type]
             var RoomAssign_array = [req.body.RoomAssign]
             var area_array = [req.body.prod_level]
             var prod_invoice_array = [req.body.prod_invoice]
+            var prod_id_array = [req.body.prod_id]
         }else{
             var product_name_array = [...req.body.prod_name]
             var proudct_code_array = [...req.body.prod_code]
-            var quantity_array = [...req.body.prod_qty]
+            var status_array = [...req.body.status]
+            var txtDate_array =  [...req.body.txtDate]
+            var txtNote_array =  [...req.body.txtNote]
             var prod_unit_array =  [...req.body.prod_unit]
             var prod_level_array = [...req.body.type]
             var RoomAssign_array = [...req.body.RoomAssign]
             var area_array = [...req.body.prod_level]
             var prod_invoice_array = [...req.body.prod_invoice]
+            var prod_id_array = [...req.body.prod_id]
         } 
 
         const newproduct = product_name_array.map((value)=>{
@@ -416,8 +423,8 @@ router.post("/view/add_purchases", auth, async (req, res) => {
         proudct_code_array.forEach((value,i) => {
             newproduct[i].product_code = value
         });
-        quantity_array.forEach((value,i) => {
-            newproduct[i].quantity = value
+        status_array.forEach((value,i) => {
+            newproduct[i].status = value
         });
         prod_unit_array.forEach((value, i) => {
             newproduct[i].standard_unit = value
@@ -439,18 +446,32 @@ router.post("/view/add_purchases", auth, async (req, res) => {
             newproduct[i].idfromtransaction = uuidv4()
         })
 
-        const Newnewproduct = newproduct.filter(obj => obj.quantity !== "0" && obj.quantity !== "");
-            const data = new purchases_finished({ invoice: invoice, suppliers:suppliers, date, warehouse_name, product:Newnewproduct, note })
+        prod_id_array.forEach((value, i) => {
+            newproduct[i].product_id = value
+        })
+
+        txtDate_array.forEach((value, i) => {
+            newproduct[i].date = value
+        })
+
+        txtNote_array.forEach((value, i) => {
+            newproduct[i].note = value
+        })
+        
+        // const Newnewproduct = newproduct.filter(obj => obj.quantity !== "0" && obj.quantity !== "");
+            const data = new purchases_finished({ invoice: invoice, suppliers:suppliers, date, warehouse_name, product:newproduct, note })
             const purchases_data = await data.save()
   
-
-            const new_purchase = await purchases_finished.findOne({ invoice: invoice });
+            
+            const new_purchase = await purchases_finished.findOne({ id: purchases_data._id });
+            // res.json(new_purchase);
+            // return;
             const promises = new_purchase.product.map( async (product_details) => {
                 var warehouse_data = await warehouse.findOne({ name: warehouse_name, room: product_details.room_name });
                 var x = 0;
                 const match_data = warehouse_data.product_details.map((data) => {
-                    if (data.product_name == product_details.product_name  && data.level == product_details.level && data.rack == product_details.rack  &&   data.invoice == new_purchase.invoice && data.idfromtransaction == product_details.idfromtransaction ) {
-                        data.product_stock = data.product_stock + product_details.quantity
+                    if (data.product_name == product_details.product_name  && data.level == product_details.level && data.rack == product_details.rack  &&   data.invoice == new_purchase.invoice ) {
+                        data.status =  product_details.status
                         x++
                     }
     
@@ -459,13 +480,16 @@ router.post("/view/add_purchases", auth, async (req, res) => {
                 if (x == "0") {
                     warehouse_data.product_details = warehouse_data.product_details.concat({ 
                         product_name: product_details.product_name, 
-                        product_stock: product_details.quantity, 
+                        status: product_details.status, 
                         product_code: product_details.product_code,
                         level: product_details.level, 
                         rack: product_details.rack, 
                         unit: product_details.standard_unit, 
                         invoice: product_details.invoice,
-                        idfromtransaction: product_details.idfromtransaction
+                        idfromtransaction: product_details.idfromtransaction,
+                        product_id: product_details.product_id,
+                        date: product_details.date,
+                        note: product_details.note
                     })
                 }
                 return warehouse_data;
@@ -509,7 +533,7 @@ router.post("/view/add_purchases", auth, async (req, res) => {
             }
 
             var product_list = product_name_array
-            var quantity_list = quantity_array
+            var quantity_list = status_array
             var proudct_code_list = proudct_code_array
             var prod_unit_list = prod_unit_array
           //  var prod_secondunit_list = prod_secondunit_array

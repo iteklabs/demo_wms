@@ -223,35 +223,38 @@ router.get("/view/add_adjustment", auth, async (req, res) => {
 router.post("/view/add_adjustment", auth, async(req, res) => {
     try{
         const {warehouse_name, date, prod_name, note, invoice } = req.body
-
+        
         if(typeof prod_name == "string"){
             var product_name_array = [req.body.prod_name]
-            var level_array = [req.body.level]
-            var rack_array = [req.body.level2]
-            var stock_array = [req.body.stock]
-            var types_array = [req.body.types]
-            var adjust_qty_array = [req.body.adjust_qty]
-            var new_adjust_qty_array = [req.body.new_adjust_qty]
-            var unit_units_array = [req.body.unit]
+            var status_array = [req.body.status]
+            var from_status_array = [req.body.from_status]
+            var txtDate_array = [req.body.txtDate]
+            var txtNote_array = [req.body.txtNote]
+            var unit = [req.body.unit]
+          
             var product_code_array = [req.body.prod_code]
             var Rooms_array = [req.body.Rooms]
             var level_array1 = [req.body.type]
+            var rack_array = [req.body.level2]
             var prod_invoice_array = [req.body.prod_invoice]
             var idfromtransaction_array = [req.body.idfromtransaction]
+            var product_id_array = [req.body.product_id]
+            var warehouse_id_detl_array = [req.body.warehouse_id_detl]
         }else{
             var product_name_array = [...req.body.prod_name]
-            var level_array = [...req.body.level]
-            var rack_array = [...req.body.level2]
-            var stock_array = [...req.body.stock]
-            var types_array = [...req.body.types]
-            var adjust_qty_array = [...req.body.adjust_qty]
-            var new_adjust_qty_array = [...req.body.new_adjust_qty]
-            var unit_units_array = [...req.body.unit]
+            var status_array = [...req.body.status]
+            var from_status_array = [...req.body.from_status]
+            var txtDate_array = [...req.body.txtDate]
+            var txtNote_array = [...req.body.txtNote]
+            var unit = [...req.body.unit]
             var product_code_array = [...req.body.prod_code]
             var Rooms_array = [...req.body.Rooms]
             var level_array1 = [...req.body.type]
+            var rack_array = [...req.body.level2]
             var prod_invoice_array = [...req.body.prod_invoice]
             var idfromtransaction_array = [...req.body.idfromtransaction]
+            var product_id_array = [...req.body.product_id]
+            var warehouse_id_detl_array = [...req.body.warehouse_id_detl]
         } 
         
         const newproduct = product_name_array.map((value)=>{
@@ -271,23 +274,23 @@ router.post("/view/add_adjustment", auth, async(req, res) => {
             newproduct[i].level = value
         })
 
-        stock_array.forEach((value,i) => {
-            newproduct[i].stockBefore = value
+        status_array.forEach((value,i) => {
+            newproduct[i].status = value
         });
 
-        types_array.forEach((value, i) => {
-            newproduct[i].types = value
+        from_status_array.forEach((value, i) => {
+            newproduct[i].from_status = value
         })
 
-        adjust_qty_array.forEach((value,i) => {
-            newproduct[i].adjust_qty = value
+        txtDate_array.forEach((value,i) => {
+            newproduct[i].date = value
         });
 
-        new_adjust_qty_array.forEach((value,i) => {
-            newproduct[i].new_adjust_qty = value
+        txtNote_array.forEach((value,i) => {
+            newproduct[i].note = value
         });
 
-        unit_units_array.forEach((value,i) => {
+        unit.forEach((value,i) => {
             newproduct[i].unit = value
         });
 
@@ -314,53 +317,50 @@ router.post("/view/add_adjustment", auth, async(req, res) => {
             newproduct[i].invoice = value
         })
 
-    
-        const newFilter = newproduct.filter(obj => obj.new_adjust_qty !== "0" && obj.new_adjust_qty !== "");
-        var error = 0
-        newFilter.forEach(data => {
-            console.log("foreach newproduct", data);
-            if (parseInt(data.new_adjust_qty) < 0 ) {
-                
-                error++
-            }
-        })
-        if (error != 0) {
-            
-            req.flash("errors", `You can't subtract, the current stock is 0`)
-            return res.redirect("back")
-        }
 
-        const data = new adjustment_finished({ warehouse_name, date, product:newFilter, note, invoice })
+        product_id_array.forEach((value, i) => {
+            newproduct[i].product_id = value
+        })
+
+
+        warehouse_id_detl_array.forEach((value, i) => {
+            newproduct[i].warehouse_detl_id = value
+        })
+       
+    
+        // const newFilter = newproduct.filter(obj => obj.new_adjust_qty !== "0" && obj.new_adjust_qty !== "");
+        // var error = 0
+        // newFilter.forEach(data => {
+        //     console.log("foreach newproduct", data);
+        //     if (parseInt(data.new_adjust_qty) < 0 ) {
+                
+        //         error++
+        //     }
+        // })
+        // if (error != 0) {
+            
+        //     req.flash("errors", `You can't subtract, the current stock is 0`)
+        //     return res.redirect("back")
+        // }
+
+        const data = new adjustment_finished({ warehouse_name, date, product:newproduct, note, invoice })
 
         const adjustment_data = await data.save() ;
 
+    
+
        
         const promises = data.product.map(async(product_details) => {
-            
-            
-
-            if(product_details.adjust_qty > 0){
                 warehouse_data = await warehouse.findOne({ name: warehouse_name, room: product_details.room_names });
-                
+            
                 const match_data = warehouse_data.product_details.map((data) => {
-                    if (product_details.types == "minus") {
-                        if (data.product_name == product_details.product_name  && data.level == product_details.level && data.rack == product_details.rack  && data.invoice == product_details.invoice && data.idfromtransaction == product_details.idfromtransaction) {
-                            data.product_stock = data.product_stock - product_details.adjust_qty
+                        if (data.product_name == product_details.product_name  && data.level == product_details.level && data.rack == product_details.rack  && data.invoice == product_details.invoice && data.idfromtransaction == product_details.idfromtransaction && data._id == product_details.warehouse_detl_id) {
+                            data.status = product_details.status
+                            data.date = product_details.date
+                            data.note = product_details.note
                         }
-                    } else if(product_details.types == "add") {
-                        
-                        if (data.product_name == product_details.product_name && data.level == product_details.level && data.rack == product_details.rack && data.invoice == product_details.invoice && data.idfromtransaction == product_details.idfromtransaction) {
-                            data.product_stock = data.product_stock + product_details.adjust_qty
-                        }
-                    }
-        
-        
                 })
-            }
-
-
             return warehouse_data;
-
         })
 
 
@@ -1152,57 +1152,22 @@ router.post("/barcode_scanner", async (req, res) => {
                     CBM : { $first: { $toDouble: "$product_details.CBM" } },
                     maxProducts: { $first: "$product_details.maxProducts" },
                     invoice : { $first: "$product_details.invoice" },
-                    idfromtransaction : { $first : "$product_details.idfromtransaction"}
+                    idfromtransaction : { $first : "$product_details.idfromtransaction"},
+                    status: { $first : "$product_details.status" },
+                    date: { $first : "$product_details.date" },
+                    note: { $first : "$product_details.note" },
+                    product_id: { $first : "$product_details.product_id" },
+                    warehouse_id_detl: { $first : "$product_details._id" },
 
                 }
             },
         ]);
 
-        const stock_data2 = await warehouse.aggregate([
-            
-            {
-                $match: { "name": warehouse_data, "room" : value }
-            },
-            {
-                $unwind: "$product_details"
-            },
-            {
-                $match: { "product_details.secondary_code": primary_code }
-            },
-            {
-                $group: {
-                    _id: "$product_details._id",
-                    name: { $first: "$product_details.product_name" },
-                    product_stock: { $first: "$product_details.product_stock" },
-                    primary_code: { $first: "$product_details.primary_code" },
-                    secondary_code: {$first: "$product_details.secondary_code" },
-                    product_code: { $first: "$product_details.product_code" },
-                    level: { $first: "$product_details.level" },
-                    isle: { $first: "$product_details.isle" },
-                    pallet: { $first: "$product_details.pallet" },
-                    unit: { $first: "$product_details.unit" },
-                    secondary_unit: { $first: "$product_details.secondary_unit" },
-                    storage: { $first: "$product_details.storage" },
-                    rack: { $first: "$product_details.rack" },
-                    expiry_date: { $first: "$product_details.expiry_date" },
-                    production_date: { $first: "$product_details.production_date" },
-                    batch_code: { $first: "$product_details.batch_code"},
-                    product_cat: { $first: "S" },
-                    maxPerUnit: { $first: "$product_details.maxPerUnit"},
-                    roomNamed : { $first: "$room" },
-                    CBM : { $first: { $toDouble: "$product_details.CBM" } },
-                    maxProducts: { $first: "$product_details.maxProducts" },
-                    invoice : { $first: "$product_details.invoice" },
-                    idfromtransaction : { $first : "$product_details.idfromtransaction"}
-                }
-            },
-        ]);
+       
 
         if (stock_data.length > 0) {
             results.push(stock_data);
-        } else if (stock_data2.length > 0) {
-            results.push(stock_data2);
-        }
+        } 
     }
 
     // Create an array of promises for each value

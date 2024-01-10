@@ -135,7 +135,9 @@
                                                                     <tr>
                                                                         <th scope="col">Item Code / Serial No. </th>
                                                                         <th scope="col">Item Description </th>
-                                                                        <th scope="col"><%= language.quantity %> </th>
+                                                                        <th scope="col">Status </th>
+                                                                        <th scope="col">Date </th>
+                                                                        <th scope="col">Note </th>
                                                                         <th scope="col">Unit of Measure </th>
                                                                         <th scope="col">Area</th>
                                                                         <th scope="col">Level </th>
@@ -159,17 +161,49 @@
 
 
                                                                             <td>
-                                                                                <input type="text" name="prod_name" class="form-control" style="width: 380px;" value="<%= users.product_name %>" readonly>
+                                                                                <input type="text" name="prod_name" class="form-control" style="width: 150px;" value="<%= users.product_name %>" readonly>
                                                                             </td>
                          
                                                                             
                                                                             
+                                                                            <% let statusData; %>
+                                                                            <% switch (users.status) {
+                                                                                case "S":
+                                                                                    statusData = "SOLD";
+                                                                                break;
+
+                                                                                case "O":
+                                                                                    statusData = "OPERATIONAL";
+                                                                                break;
+
+                                                                                case "NO":
+                                                                                    statusData = "NON-OPERATIONAL";
+                                                                                break;
+
+                                                                                case "UI":
+                                                                                    statusData = "UNDER INSPECTION";
+                                                                                break;
                                                                             
+                                                                                default:
+                                                                                    break;
+                                                                            } %>
                                                                             <td>
                                                                                  <div class="input-group"> 
-                                                                                    <input type="number" name="prod_qty" class="form-control" style="width: 150px;" id="prod_qty<%= users.product_code+x %>" onkeyup="ValidationForMaxQTY('<%= users.product_code %>', '<%= x %>')" value="<%= users.quantity %>" readonly> 
+                                                                                    <input type="text" name="prod_qty" class="form-control" style="width: 150px;" id="prod_qty<%= users.product_code+x %>"  value="<%= statusData %>" readonly> 
                                                                                 </div>
                                                                             </td>
+
+                                                                            <td>
+                                                                                <div class="input-group"> 
+                                                                                   <input type="date" name="prod_qty" class="form-control" style="width: 150px;" id="prod_qty<%= users.product_code+x %>"  value="<%= users.date %>" readonly> 
+                                                                               </div>
+                                                                           </td>
+
+                                                                           <td>
+                                                                            <div class="input-group"> 
+                                                                               <input type="text" name="prod_qty" class="form-control" style="width: 200px;" id="prod_qty<%= users.product_code+x %>"  value="<%= users.note %>" readonly> 
+                                                                           </div>
+                                                                       </td>
                                                                             
                                                                             
                                                                             <td>

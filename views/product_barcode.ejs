@@ -116,8 +116,8 @@
                                                                 <thead>
                                                                     <tr>
                                                                         <th><%= language.products %></th> 
-                                                                        <th>Primary Code</th> 
-                                                                        <th>Secondary Code</th>
+                                                                        <!-- <th>Primary Code</th> 
+                                                                        <th>Secondary Code</th> -->
                                                                         <th>Product Code</th>
                                                                         <th><%= language.quantity %></th>
                                                                     </tr>
@@ -129,13 +129,13 @@
                                                                        
                                                                        <tr>
                                                                         <td id="pro_name"><%= alldata.name %></td>
-                                                                        <td id="pro_prim_code"><%= alldata.primary_code %></td>
-                                                                        <td id="pro_second_code"><%= alldata.secondary_code %></td>
+                                                                        <!-- <td id="pro_prim_code"><%= alldata.primary_code %></td>
+                                                                        <td id="pro_second_code"><%= alldata.secondary_code %></td> -->
                                                                         <td id="pro_code"><%= alldata.product_code %></td>
                                                                         <td> <input type="number" id="printQty_<%= alldata.primary_code %><%= alldata.product_code %>" value="<%= alldata.quantity %>" required="required" min="1" class="form-control">  </td>
                                                                         <td> <select class="form-control" name="barcodes" id="barcodes_<%= alldata.primary_code %><%= alldata.product_code %>">
-                                                                                <option value="primary">Primary Code</option>
-                                                                                <option value="secondary">Secondary Code</option>
+                                                                                <!-- <option value="primary">Primary Code</option>
+                                                                                <option value="secondary">Secondary Code</option> -->
                                                                                 <option value="product_code">Product Code</option>
                                                                             </select> 
                                                                         </td>

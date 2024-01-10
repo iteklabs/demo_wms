@@ -517,15 +517,16 @@
                                                                     <tr>
                                                                         <th scope="col">Item Code / Serial No. </th>
                                                                         <th scope="col">Item Description</th>
-                                                                        <th scope="col"><%= language.adjust_qty %>  <span class="text-red">*</span></th>
-                                                                       
-                                                                        <th><%= language.current_stock %> </th>
-                                                                        <th><%= language.type %> </th>
+                                                                        <th scope="col">Status<span class="text-red">*</span></th>
+                                                                        <th>Current Status</th>
+                                                                        <th>Date</th>
+                                                                        <th>Note</th>
+                                                                        <!-- <th><%= language.type %> </th> -->
                                                                         <th scope="col">Unit of Measure</th>
                                                                         <th>Area</th>
                                                                         <th>Level</th>
                                                                         <th>Rack</th>
-                                                                        <th scope="col"><%= language.stock_after_adjust %> <span class="text-red">*</span> </th>
+                                                                        <!-- <th scope="col"><%= language.stock_after_adjust %> <span class="text-red">*</span> </th> -->
                                                                         <th>Action</th>
 
                                                                     </tr>
@@ -992,6 +993,34 @@
 
         }
 
+        
+        function resStatus(status){
+            var statusData ='';
+            switch (status) {
+                case "S":
+                    statusData = "SOLD";
+                break;
+
+                case "O":
+                    statusData = "OPERATIONAL";
+                break;
+
+                case "NO":
+                    statusData = "NON-OPERATIONAL";
+                break;
+
+                case "UI":
+                    statusData = "UNDER INSPECTION";
+                break;
+            
+                default:
+                break;
+            }
+
+
+            return statusData;
+        }
+        
         $(document).ready(function() {
             
             var x=1;
@@ -1043,7 +1072,7 @@
                   $.each(response, function(index, data1) {
 
                     data1.forEach((data) => {
-                        if(data.product_stock > 0){
+                        
                         var row = $('<tr>');
                         const levelData = data.level === null ? 0 : data.level;
                         const isleData =  data.isle === null ? 0 : data.isle;
@@ -1052,16 +1081,18 @@
                         
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 200px;" name="prod_code" value="' + data.product_code + '" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 400px;" name="prod_name" value="' + data.name + '" readonly>'));
-                        row.append($('<td>').html('<input type="number" class="form-control adjust_qty" style="width: 150px;" name="adjust_qty" id="adjust_qty' + x + '" oninput="myFunctionCompute('+ x +')" onkeyup="ValidationForMaxQTY('+ data.product_code +', ' + x + ');" value="">'));
-
-                        row.append($('<td>').html('<input type="text" class="form-control stock" style="width: 150px;" name="stock" id="stock' + x + '" value="' + data.product_stock + '" readonly>'));
+                      
+                        row.append($('<td>').html('<select class="form-control" style="width: 200px;" name="status" id="status"><option value="O">OPERATIONAL</option><option value="NO">NON-OPERATIONAL</option><option value="UI">UNDER INSPECTION</option><option value="S">SOLD</option></select>'));
                         
-                        row.append($('<td>').html('<select class="form-control" style="width: 150px;" name="types" id="types' + x + '"> <option value="minus"> Subtract </option> <option value="add"> Add </option></select>'));
+                        row.append($('<td>').html('<input type="text" class="form-control stock" style="width: 150px;" name="stock" id="stock' + x + '" value="' + resStatus(data.status) + '" readonly>'));
+                        
+                        row.append($('<td>').html('<input type="date" class="form-control" style="width: 150px;" name="txtDate" id="txtDate" value="'+ data.date +'">'));
+                        row.append($('<td>').html('<textarea class="form-control" id="txtNote" name="txtNote" style="width: 200px;" rows="2" cols="50">'+ data.note +'</textarea>'));
                         row.append($('<td>').html('<input type="text" class="form-control unit" style="width: 100px;" name="unit" id="unit' + x + '" value="'+ data.unit +'" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 100px;" name="Rooms" value="' + data.roomNamed + '" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="type" level="type' + x + '" id="type' + x + '" style="width: 150px;" value="' + data.level + '"></select>'));
                         row.append($('<td>').html('<input type="text" class="form-control level" style="width: 80px;" name="level2" id="level2'+data.product_code+ x +'" value="' + data.rack + '" readonly>'));
-                        row.append($('<td>').html('<input type="number" class="form-control new_adjust_qty" style="width: 95px;" name="new_adjust_qty" id="new_adjust_qty' + x + '" value="" readonly>'));
+                       
                         row.append($('<td>').html('<button type="button" class="btn btn-square btn-outline-danger" id="remove">Remove</button>'));
                     
 
@@ -1071,35 +1102,22 @@
                             name: 'idfromtransaction',
                             value: data.idfromtransaction
                         }).appendTo(row);
-                        
-                  
-
-                        $('<input>').attr({
-                        type: 'hidden',
-                        id: 'level'+data.product_code,
-                        name: 'level',
-                        value: data.isle+data.pallet
-                        }).appendTo(row);
-
-                        
-                    
 
 
                         $('<input>').attr({
                             type: 'hidden',
-                            id: 'New_Qty_Converted'+x,
-                            name: 'New_Qty_Converted',
-                            value: ""
+                            id: 'from_status'+x,
+                            name: 'from_status',
+                            value: data.status
                         }).appendTo(row);
 
 
                         $('<input>').attr({
                             type: 'hidden',
-                            id: 'New_Qty_Converted_adj'+x,
-                            name: 'New_Qty_Converted_adj',
-                            value: ""
+                            id: 'product_id'+x,
+                            name: 'product_id',
+                            value: data.product_id
                         }).appendTo(row);
-
 
 
                         $('<input>').attr({
@@ -1109,6 +1127,13 @@
                             value: data.invoice
                         }).appendTo(row);
 
+                        $('<input>').attr({
+                            type: 'hidden',
+                            id: 'warehouse_id_detl'+x,
+                            name: 'warehouse_id_detl',
+                            value: data.warehouse_id_detl
+                        }).appendTo(row);
+
                         
                         $('#tblPage_new').append(row);
 
@@ -1116,7 +1141,7 @@
            
                         x++
                         
-                    }
+                    
                     
                     })
                     

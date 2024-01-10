@@ -99,8 +99,9 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    
                                                     <% purchases.forEach((purchases)=> { %>
-
+                                                       
                                                         <% if(master_shop[0].currency_placement == 1) { %>
 
                                                             <tr>
@@ -203,7 +204,7 @@
                                                             </tr>
                                                             
                                                         <% } else { %>
-                                                                
+                                                               
                                                             <tr>
                                                                 <td class="text-nowrap">
                                                                     <% if(purchases.return_data=="True" ){ %>
@@ -237,7 +238,7 @@
                                                                 </td>
                                                                 
                                                                 <td class="text-nowrap">
-                                                                    <%= purchases.total_product_quantity.toLocaleString() %>
+                                                                    <%= purchases.status %>
                                                                 </td>
 
                                                                 <td class="text-nowrap">
@@ -251,60 +252,7 @@
 
 
                                                               
-                                                                <!-- <td class="text-nowrap">
-                                                                    <a href="/all_purchases_finished/view/<%= purchases._id %>">
-                                                                        <button type="button"
-                                                                            class="btn btn-success"><%= language.edit %> </button>
-                                                                    </a>
-                                                                </td> -->
-                                                                
-                                                                <!-- <td class="text-nowrap">
-                                                                    <div class="btn-group" role="group">
-                                                                        <button type="button"
-                                                                            class="btn btn-primary dropdown-toggle mx-1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"><%= language.more %> </button>
-                                                                        <div class="dropdown-menu"> -->
-
-                                                                            
-                                                                            <% if (purchases.due_amount == 0) { %>
-                                                                                
-                                                                                <% } else { %>
-                                                                                    <!-- <a class="dropdown-item"
-                                                                                        href="javascript:void()" id="purchases_payment_id"
-                                                                                        data-toggle="modal"
-                                                                                        data-target="#PaymentModal"
-                                                                                        data-invoice="<%= purchases.invoice %>"
-                                                                                        data-suppliers="<%= purchases.suppliers %>"
-                                                                                        data-payable="<%= purchases.payable %>"
-                                                                                        data-paid_amount="<%= purchases.paid_amount %>"
-                                                                                        data-id="<%= purchases._id %>"><i
-                                                                                            class="la la-money-bill-wave"></i>
-                                                                                            <%= language.give_payment %> 
-                                                                                    </a> -->
-        
-                                                                                    <% if(purchases.return_data=="True" ){ %>
-                                                                                        <!-- <a class="dropdown-item d-none"
-                                                                                        href="/all_purchases_finished/view/return_purchase/<%= purchases._id %>"
-                                                                                        href="javascript:void()"><i
-                                                                                        class="la la-undo"></i> <%= language.return_purchase %> 
-                                                                                    </a> -->
-                                                                                        
-                                                                                    <% }else {%>
-                                                                                        <!-- <a class="dropdown-item"
-                                                                                        href="/all_purchases_finished/view/return_purchase/<%= purchases._id %>"
-                                                                                        href="javascript:void()"><i
-                                                                                        class="la la-undo"></i> <%= language.return_purchase %> 
-                                                                                    </a> -->
-                                                                                    <% } %>
-                                                                                    
-                                                                                <% } %>
-
-                                                                            <!-- <a class="dropdown-item" href="/all_purchases_finished/invoice/<%= purchases._id %>" href="javascript:void()">
-                                                                                <i class="la la-download"></i> <%= language.save_print %> 
-                                                                            </a>
-
-                                                                        </div> -->
+                                                            
 
                                                                         <td>
                                                                             <a href="/all_purchases_finished/preview/<%= purchases._id %>" id="barcode" data-id="<%= purchases._id %>"
