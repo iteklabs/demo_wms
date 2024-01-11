@@ -1396,8 +1396,8 @@ const transfers_data_finished = new mongoose.Schema({
         product_code:{
             type: String
         },
-        from_quantity:{
-          type: Number  
+        from_status:{
+          type: String  
         },
         from_level:{
             type: Number  
@@ -1405,8 +1405,8 @@ const transfers_data_finished = new mongoose.Schema({
         from_rack:{
             type: String  
         },
-        to_quantity:{
-            type: Number
+        to_status:{
+            type: String
         },
         to_level:{
             type: Number
@@ -1433,6 +1433,12 @@ const transfers_data_finished = new mongoose.Schema({
             type: String
         },
         to_idfromtransaction:{
+            type: String
+        },
+        from_warehouse_id_detl:{
+            type: String
+        },
+        from_product_id: {
             type: String
         }
     }],

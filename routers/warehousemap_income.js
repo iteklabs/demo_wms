@@ -129,24 +129,18 @@ router.post('/MapData', async (req, res) => {
                 rack: "$product_details.rack",
                 product_code: "$product_details.product_code",
                 product_name: "$product_details.product_name",
+                status: "$product_details.status",
+                
           },
           products: {
             $push: {
               product_name: "$product_details.product_name",
-              product_quantity: "$product_details.product_stock",
               product_code: "$product_details.product_code",
+              status: "$product_details.status",
 
             }
           },
-          totalQuantity: {
-            $sum: {
-              $cond: {
-                if: { $gt: ["$product_details.product_stock", 0] },
-                then: "$product_details.product_stock",
-                else: 0
-              }
-            }
-          }
+          
         }
       },
       {
@@ -154,15 +148,10 @@ router.post('/MapData', async (req, res) => {
           _id: 0,
           rack: "$_id.rack",
           product_code: "$_id.product_code",
-          products: {
-            $filter: {
-              input: "$products",
-              as: "product",
-              cond: { $gt: ["$$product.product_quantity", 0] }
-            }
-          },
-          totalQuantity: 1
-        }
+          products: "$products",
+          status: "$_id.status"
+          }
+        
       },
       {
         $lookup: {
@@ -181,13 +170,11 @@ router.post('/MapData', async (req, res) => {
           rack: 1,
           product_code: 1,
           products: 1,
-          totalQuantity: 1,
-          // Include fields from the joined collection
+          status: 1,
           image: "$productDetails.image",
           name: "$productDetails.name",
           category: "$productDetails.category",
           brand: "$productDetails.brand",
-          // Add more fields as needed
         }
       }
     ]);

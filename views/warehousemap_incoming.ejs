@@ -348,12 +348,42 @@
    
     <%- include('./partials/script'); -%>
     <script>
+
+
+      function dataval_status(status){
+          var statusData = '';
+          switch (status) {
+              case "S":
+                  statusData = "SOLD";
+              break;
+
+              case "O":
+                  statusData = "OPERATIONAL";
+              break;
+
+              case "NO":
+                  statusData = "NON-OPERATIONAL";
+              break;
+
+              case "UI":
+                  statusData = "UNDER INSPECTION";
+              break;
+          
+              default:
+              break;
+          }
+
+          return statusData;
+      }
+
+
       function jsonToArray(jsonData) {
         var data = {};
 
         jsonData.forEach((item) => {
+          console.log("asdad", item)
           var rack = item.rack;
-          var count = item.totalQuantity;
+          var count = dataval_status(item.status);
           var image = item.image;
           if (!data[rack]) {
             data[rack] = {
@@ -368,7 +398,7 @@
           item.products.forEach((product) => {
             data[rack].productData.push({
               product_name: product.product_name,
-              product_quantity: product.product_quantity,
+              product_quantity: dataval_status(product.status),
               product_code: product.product_code,
             });
           });
@@ -378,7 +408,7 @@
       }
 
       var modal = $('#myModal');
-      function showModal(countQTY, i, ltter) {
+      function showModal(i, ltter) {
 
         
         var Qty = document.getElementById("product_quantity"+i+ltter);
@@ -388,7 +418,7 @@
         var images = document.getElementById("images"+i+ltter);
         console.log(name.value)
         modal.show();
-        modal.find('.modal-content').html('<div class="card" style="width: 20rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: auto;"><img class="card-img-top" src="/upload/'+images.value+'" alt="Card image cap"><div class="card-body"><p class="card-text">Name: ' + name.value + '</p><p class="card-text">Product Code: ' + Code.value + '</p><p class="card-text">CountQTY: ' + Qty.value + '</p></div></div>');
+        modal.find('.modal-content').html('<div class="card" style="width: 20rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: auto;"><img class="card-img-top" src="/upload/'+images.value+'" alt="Card image cap"><div class="card-body"><p class="card-text">Name: ' + name.value + '</p><p class="card-text">Product Code: ' + Code.value + '</p><p class="card-text">Status: ' + Qty.value + '</p></div></div>');
       }
 
 
@@ -450,10 +480,10 @@
 
                           
                           if(DataRes[dataIsle[i]]){
-                            console.log(DataRes)
+                            // console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -601,7 +631,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -654,7 +684,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -709,7 +739,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -761,7 +791,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -813,7 +843,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -868,7 +898,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -920,7 +950,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -972,7 +1002,7 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal(' + countQTY + ', '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';

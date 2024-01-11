@@ -5,6 +5,7 @@ const { profile, master_shop, categories, brands, units, product, warehouse, sta
 const auth = require("../middleware/auth");
 const users = require("../public/language/languages.json");
 const nodemailer = require('nodemailer');
+const { v1: uuidv1, v4: uuidv4 } = require('uuid');
 
 router.get("/view", auth, async(req, res) => {
     try {
@@ -212,75 +213,49 @@ router.get("/view/add_transfer", auth, async(req, res) => {
 router.post("/view/add_transfer", auth, async(req, res) => {
     try{
         
-        const {date, from_warehouse, FromRoom_name, to_warehouse, ToRoom_name, prod_name, from_prod_qty, from_prod_level, from_prod_isle, from_prod_pallet, to_prod_qty, to_prod_level, to_prod_isle, to_prod_pallet, primary_code, secondary_code, product_code3, note, MaxStocks_data2, invoice, expiry_date,PO_number, ReqBy, dateofreq,typeservicesData, destination, deliverydate, driver, plate, van, DRSI, typevehicle, TSU, TFU} = req.body
-        res.json(req.body)
-        return
+        const {invoice, date, from_warehouse, to_warehouse, prod_name, note} = req.body
+        
         if(typeof prod_name == "string"){
             var product_name_array = [req.body.prod_name]
-            
-            var from_qty_array = [req.body.from_prod_qty]
-            var from_level_array = [req.body.from_prod_level]
-            var from_prod_leveling_array = [req.body.from_prod_leveling]
-        
-
-            var to_qty_array = [req.body.New_Qty_Converted]
-            var to_level_array = [req.body.to_prod_level]
-            var to_type = [req.body.type]
-            
-            var primary_code_array = [req.body.primary_code]
-            var secondary_code_array = [req.body.secondary_code]
-            var product_code3_array = [req.body.product_code3]
-            var MaxStocks_data2_array = [req.body.MaxStocks_data2]
-
-            var unit_array = [req.body.primary_unit]
-            var secondary_unit_array = [req.body.secondary_unit]
-            var batch_code_array = [req.body.batch_code]
-            var expiry_date_array = [req.body.expiry_date]
-            var product_date_array = [req.body.product_date]
-            var maxProducts_array = [req.body.MaxStocks_data]
-
-            var maxPerUnit_array = [req.body.maxPerUnit]
-            var prod_cat_array = [req.body.prod_cat]
-
+            var product_code_array = [req.body.product_code3]
             var RoomAssigned_array = [req.body.RoomAssigned]
-            var ToRoomAssigned_array = [req.body.ToRoomAssigned]
-            var CBM_array = [req.body.CBM]
-            var from_invoice_array = [req.body.from_invoice]
-            var to_invoice_array = [req.body.to_invoice]
+            // var from_level_array = [req.body.from_prod_level]
+            var from_level_array = [req.body.from_prod_leveling]
+            var from_rack_array = [req.body.from_prod_level2]
+            var from_status = [req.body.from_status]
+            var from_unit = [req.body.unit]
+            var from_invoice = [req.body.from_invoice]
+            var from_transaction_id = [req.body.transaction_id]
+            var warehouse_detl_id = [req.body.warehouse_detl_id]
+            var product_id = [req.body.product_id]
+
+
+            var to_room_array = [req.body.ToRoomAssigned]
+            var to_level_array = [req.body.type]
+            var to_rack_array = [req.body.to_prod_level]
+            var to_invoice = [req.body.to_invoice]
+            var to_status_array = [req.body.status]
+
+
             
         }else{
             var product_name_array = [...req.body.prod_name]
-            
-
-            var from_qty_array = [...req.body.from_prod_qty]
-            var from_level_array = [...req.body.from_prod_level]
-            var from_prod_leveling_array = [...req.body.from_prod_leveling]
-        
-            
-            var to_qty_array = [...req.body.New_Qty_Converted]
-            var to_level_array = [...req.body.to_prod_level]
-            var to_type = [...req.body.type]
-            
-            var primary_code_array = [...req.body.primary_code]
-            var secondary_code_array = [...req.body.secondary_code]
-            var product_code3_array = [...req.body.product_code3]
-            var MaxStocks_data2_array = [...req.body.MaxStocks_data2]
-
-            var unit_array = [...req.body.primary_unit]
-            var secondary_unit_array = [...req.body.secondary_unit]
-            var batch_code_array = [...req.body.batch_code]
-            var expiry_date_array = [...req.body.expiry_date]
-            var product_date_array = [...req.body.product_date]
-            var maxProducts_array = [...req.body.MaxStocks_data]
-            var maxPerUnit_array = [...req.body.maxPerUnit]
-            var prod_cat_array = [...req.body.prod_cat]
-
+            var product_code_array = [...req.body.product_code3]
             var RoomAssigned_array = [...req.body.RoomAssigned]
-            var ToRoomAssigned_array = [...req.body.ToRoomAssigned]
-            var CBM_array = [...req.body.CBM]
-
-            var from_invoice_array = [...req.body.from_invoice]
-            var to_invoice_array = [...req.body.to_invoice]
+            // var from_level_array = [...req.body.from_prod_level]
+            var from_level_array = [...req.body.from_prod_leveling]
+            var from_rack_array = [...req.body.from_prod_level2]
+            var from_status = [...req.body.from_status]
+            var from_unit = [...req.body.unit]
+            var from_invoice = [...req.body.from_invoice]
+            var from_transaction_id = [...req.body.transaction_id]
+            var warehouse_detl_id = [...req.body.warehouse_detl_id]
+            var product_id = [...req.body.product_id]
+            var to_room_array = [...req.body.ToRoomAssigned]
+            var to_level_array = [...req.body.type]
+            var to_rack_array = [...req.body.to_prod_level]
+            var to_invoice = [...req.body.to_invoice]
+            var to_status_array = [...req.body.status]
 
         } 
         
@@ -289,138 +264,267 @@ router.post("/view/add_transfer", auth, async(req, res) => {
             return  value  = {
                         product_name : value,
                     }   
-            })
+        })
                     
-        from_qty_array.forEach((value,i) => {
-            newproduct[i].from_quantity = value
-        });
-
-        from_invoice_array.forEach((value,i) => {
-            newproduct[i].from_invoice = value
-        });
-        to_invoice_array.forEach((value,i) => {
-            newproduct[i].to_invoice = value
+        product_code_array.forEach((value,i) => {
+                newproduct[i].product_code = value
         });
 
         from_level_array.forEach((value,i) => {
-            var resultValueFloorLevel = value.slice(1);
-            newproduct[i].from_isle = value[0]
-            newproduct[i].from_pallet = resultValueFloorLevel
-        });
-
-
-        from_prod_leveling_array.forEach((value,i) => {
             newproduct[i].from_level = value
         });
-        
-        
-        
-        
-        to_qty_array.forEach((value,i) => {
-            newproduct[i].to_quantity = value
-        });
-        
-        to_level_array.forEach((value,i) => {
-            var resultValueFloorLevel = value.slice(1);
-            newproduct[i].to_isle = value[0]
-            newproduct[i].to_pallet = resultValueFloorLevel
+        from_rack_array.forEach((value,i) => {
+            newproduct[i].from_rack = value
         });
 
-        to_type.forEach((value,i) => {
+        from_status.forEach((value,i) => {
+            newproduct[i].from_status = value
+        });
+
+        from_unit.forEach((value,i) => {
+            newproduct[i].unit = value
+        });
+
+        from_invoice.forEach((value,i) => {
+            newproduct[i].from_invoice = value
+        });
+
+
+        from_transaction_id.forEach((value,i) => {
+            newproduct[i].from_idfromtransaction = value
+            newproduct[i].to_idfromtransaction = uuidv4()
+        });
+
+
+        
+
+
+        product_id.forEach((value,i) => {
+            newproduct[i].from_product_id = value
+        });
+
+        RoomAssigned_array.forEach((value,i) => {
+            newproduct[i].from_room_name = value
+        });
+
+        to_room_array.forEach((value,i) => {
+            newproduct[i].to_room_name = value
+        });
+
+
+        to_level_array.forEach((value,i) => {
             newproduct[i].to_level = value
         });
-        
-        primary_code_array.forEach((value,i) => {
-            newproduct[i].primary_code = value
-        });
-        
-        secondary_code_array.forEach((value,i) => {
-            newproduct[i].secondary_code = value
-        });
-        
-        product_code3_array.forEach((value,i) => {
-            newproduct[i].product_code = value
+
+        to_rack_array.forEach((value,i) => {
+            newproduct[i].to_rack = value
         });
 
-        MaxStocks_data2_array.forEach((value, i) => {
-            newproduct[i].maxProducts = value
-        })
+        to_invoice.forEach((value,i) => {
+            newproduct[i].to_invoice = value
+        });
+
+        to_status_array.forEach((value,i) => {
+            newproduct[i].to_status = value
+        });
 
 
 
-        unit_array.forEach((value, i) => {
-            newproduct[i].unit = value
-        })
-
-
-        secondary_unit_array.forEach((value, i) => {
-            newproduct[i].secondary_unit = value
-        })
-
-
-        batch_code_array.forEach((value, i) => {
-            newproduct[i].batch_code = value
-        })
-
-
-        expiry_date_array.forEach((value, i) => {
-            newproduct[i].expiry_date = value
-        })
-
-        product_date_array.forEach((value, i) => {
-            newproduct[i].production_date = value
-        })
-
-        maxProducts_array.forEach((value, i) => {
-            newproduct[i].maxProducts = value
-        })
-
-        maxPerUnit_array.forEach((value, i) => {
-            newproduct[i].maxPerUnit = value
-        })
-
-        prod_cat_array.forEach((value, i)=>{
-            newproduct[i].prod_cat = value
-        })
-
-        RoomAssigned_array.forEach((value, i) => {
-            newproduct[i].from_room_name = value
-        })
-
-
-        ToRoomAssigned_array.forEach((value, i) => {
-            newproduct[i].to_room_name = value
-        })
-
-        CBM_array.forEach((value, i) => {
-            newproduct[i].CBM = value
-        })
-
+        warehouse_detl_id.forEach((value,i) => {
+            newproduct[i].from_warehouse_id_detl = value
+        });
         
 
 
-       
-        const Newnewproduct = newproduct.filter(obj => obj.to_quantity !== "0" && obj.to_quantity !== "" || obj.to_floorlevel !== "0" && obj.to_floorlevel !== "");
-        // res.json(Newnewproduct)
-        // return
-        var error = 0
-        Newnewproduct.forEach(data => {
-            if (parseInt(data.from_quantity) < parseInt(data.to_quantity)) {
-                
-                error++
-            }
-        })
-        if (error != 0) {
-            
-            req.flash("errors", `Must not be greater than stock Qty`)
-            return res.redirect("back")
-        }
 
-    
-        
-        
-        const data = new transfers_finished({ date, from_warehouse, to_warehouse, product:Newnewproduct, note, invoice, PO_number , RequestedBy: ReqBy, DateofRequest: dateofreq, typeservices:typeservicesData, destination, deliverydate, driver, plate, van, DRSI, typevehicle:typevehicle, TSU, TFU })
+        const data = new transfers_finished({ invoice, date, from_warehouse, to_warehouse, product:newproduct, note  })
         const transfers_data = await data.save()
+
+
+        const promises = data.product.map(async (product_details) => {
+            try {
+                var from_warehouse_data = await warehouse.findOne({ name: from_warehouse, room: product_details.from_room_name });
+        
+                const match_data = from_warehouse_data.product_details.find((data) => {
+                    return data.invoice == product_details.from_invoice && data._id == product_details.from_warehouse_id_detl && data.idfromtransaction == product_details.from_idfromtransaction;
+                });
+        
+                if (match_data) {
+                    await warehouse.update(
+                        { _id: from_warehouse_data._id },
+                        { $pull: { product_details: { _id: match_data._id } } }
+                    );
+        
+                    console.log("Update successful");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        });
+        
+        var dataend = await Promise.all(promises);
+
+
+
+
+        const promises2 = data.product.map(async (product_details) => {
+            try {
+                var to_warehouse_data = await warehouse.findOne({ name: to_warehouse, room: product_details.to_room_name });
+                var x = 0;
+                const match_data2 = to_warehouse_data.product_details.find((data) => {
+                    return data.invoice == product_details.from_invoice && data._id == product_details.from_warehouse_id_detl && data.idfromtransaction == product_details.to_idfromtransaction;
+                    x++;
+                });
+        
+                if (x == 0) {
+                    to_warehouse_data.product_details = to_warehouse_data.product_details.concat({ 
+                        product_name: product_details.product_name, 
+                        status: product_details.to_status, 
+                        level: product_details.to_level, 
+                        rack: product_details.to_rack, 
+                        product_code: product_details.product_code, 
+                        unit: product_details.unit,
+                        date: product_details.date,
+                        note: product_details.note,
+                        invoice: product_details.to_invoice,
+                        idfromtransaction: product_details.to_idfromtransaction,
+                        product_id: product_details.from_product_id
+                    })
+        
+                    console.log("insert successful");
+                    return to_warehouse_data;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        });
+     
+        
+
+
+        Promise.all(promises2)
+            .then(async (updatedWarehouseDataArray) => {
+                try {
+
+                    for (const TowarehouseData of updatedWarehouseDataArray) {
+                        await warehouse.updateOne({ _id: TowarehouseData._id }, {
+                                $addToSet: {
+                                    product_details: { $each: TowarehouseData.product_details }
+                                }
+                          });
+                    }
+                    data.finalize = "True"
+                                const transfer_data = await data.save()
+
+
+                                var product_list = data.product
+                                const master = await master_shop.find()
+                                const email_data = await email_settings.findOne()
+                                const supervisor_data = await supervisor_settings.find();
+
+                                let mailTransporter = nodemailer.createTransport({
+                                    host: email_data.host,
+                                    port: Number(email_data.port),
+                                    secure: false,
+                                    auth: {
+                                        user: email_data.email,
+                                        pass: email_data.password
+                                    }
+                                });
+
+
+                                var arrayItems = "";
+                                var n;
+                                for (n in product_list) {
+                                    arrayItems +=  '<tr>'+
+                                                        '<td style="border: 1px solid black;">' + product_list[n].product_name + '</td>' +
+                                                        '<td style="border: 1px solid black;">' + product_list[n].to_quantity + '</td>' +
+                                                        '<td style="border: 1px solid black;">' + product_list[n].to_room_name + '</td>' +
+                                                        '<td style="border: 1px solid black;">' + product_list[n].to_level + '</td>' +
+                                                        '<td style="border: 1px solid black;">' + product_list[n].to_isle+product_list[n].to_pallet + '</td>' +
+                                                        
+                                                    '</tr>'
+                                }
+
+
+                                let mailDetails = {
+                                    from: email_data.email,
+                                    to: supervisor_data[0].RMSEmail,
+                                    subject:'Transfer Product Mail',
+                                    attachments: [{
+                                        filename: 'Logo.png',
+                                        path: __dirname + '/../public' +'/upload/'+master[0].image,
+                                        cid: 'logo'
+                                   }],
+                                    html:'<!DOCTYPE html>'+
+                                        '<html><head><title></title>'+
+                                        '</head><body>'+
+                                            '<div>'+
+                                                '<div style="display: flex; align-items: center; justify-content: center;">'+
+                                                    '<div>'+
+                                                        '<img src="cid:logo" class="rounded" width="66.5px" height="66.5px"></img>'+
+                                                    '</div>'+
+                                                
+                                                    '<div>'+
+                                                        '<h2> '+ master[0].site_title +' </h2>'+
+                                                    '</div>'+
+                                                '</div>'+
+                                                '<hr class="my-3">'+
+                                                '<div>'+
+                                                    '<h5 style="text-align: left;">'+
+                                                        ' Order Number : '+ data.invoice +' '+
+                                                        '<span style="float: right;">'+
+                                                            ' Order Date : '+ data.date +' '+
+                                                        '</span>'+
+                                                        
+                                                    '</h5>'+
+                                                '</div>'+
+                                                '<table style="width: 100% !important;">'+
+                                                    '<thead style="width: 100% !important;">'+
+                                                        '<tr>'+
+                                                            '<th style="border: 1px solid black;"> Product Name </th>'+
+                                                            '<th style="border: 1px solid black;"> Quantity </th>'+
+                                                            '<th style="border: 1px solid black;"> Room </th>'+
+                                                            '<th style="border: 1px solid black;"> Level </th>'+
+                                                            '<th style="border: 1px solid black;"> Location </th>'+
+                                                            
+                                                            
+                                                        '</tr>'+
+                                                    '</thead>'+
+                                                    '<tbody style="text-align: center;">'+
+                                                        ' '+ arrayItems +' '+
+                                                    '</tbody>'+
+                                                '</table>'+
+                                                
+                                                
+                                                '<div>'+
+                                                    '<strong> Regards </strong>'+
+                                                    '<h5>'+ master[0].site_title +'</h5>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</body></html>'
+                                };
+                                
+                                mailTransporter.sendMail(mailDetails, function(err, data) {
+                                    if(err) {
+                                        console.log(err);
+                                        console.log('Error Occurs');
+                                    } else {
+                                        console.log('Email sent successfully');
+                                    }
+                                });
+                }catch (error) {
+                    console.error(error);
+                    res.status(500).json({ error: 'To An error occurred while saving data.' });
+                }
+            })
+            .catch((error) => {
+                // Handle any errors that might have occurred during the process.
+                console.error(error);
+                res.status(500).json({ error: 'An error occurred.' });
+            });
+              
+       
 
 
         req.flash('success', `Product Transfer successfully`)
@@ -1276,73 +1380,27 @@ router.post("/barcode_scanner", async (req, res) => {
                 $group: {
                     _id: "$product_details._id",
                     name: { $first: "$product_details.product_name" },
-                    instock: { $first: "$product_details.product_stock" },
-                    primary_code: { $first: "$product_details.primary_code" },
-                    secondary_code: {$first: "$product_details.secondary_code" },
                     product_code: { $first: "$product_details.product_code" },
                     level: { $first: "$product_details.level" },
-                    rack: { $first: "$product_details.rack" },
                     unit: { $first: "$product_details.unit" },
-                    secondary_unit: { $first: "$product_details.secondary_unit" },
-                    storage: { $first: "$product_details.storage" },
                     rack: { $first: "$product_details.rack" },
-                    expiry_date: { $first: "$product_details.expiry_date" },
-                    production_date: { $first: "$product_details.production_date" },
-                    batch_code: { $first: "$product_details.batch_code" },
-                    maxPerUnit: { $first: "$product_details.maxPerUnit" },
                     roomNamed : { $first: "$room" },
-                    prod_cat: { $first: "P" },
-                    maxProducts: { $first: "$product_details.maxProducts"},
-                    CBM : { $first: { $toDouble: "$product_details.CBM" } },
-                    invoice: { $first: "$product_details.invoice" }
+                    invoice : { $first: "$product_details.invoice" },
+                    idfromtransaction : { $first : "$product_details.idfromtransaction"},
+                    status: { $first : "$product_details.status" },
+                    date: { $first : "$product_details.date" },
+                    note: { $first : "$product_details.note" },
+                    product_id: { $first : "$product_details.product_id" },
+                    warehouse_id_detl: { $first : "$product_details._id" },
                 }
             },
         ]);
 
-        const stock_data2 = await warehouse.aggregate([
-            
-            {
-                $match: { "name": FromWareHouse, "room" : value }
-            },
-            {
-                $unwind: "$product_details"
-            },
-            {
-                $match: { "product_details.secondary_code": primary_code }
-            },
-            {
-                $group: {
-                    _id: "$product_details._id",
-                    name: { $first: "$product_details.product_name" },
-                    instock: { $first: "$product_details.product_stock" },
-                    primary_code: { $first: "$product_details.primary_code" },
-                    secondary_code: {$first: "$product_details.secondary_code" },
-                    product_code: { $first: "$product_details.product_code" },
-                    level: { $first: "$product_details.level" },
-                    isle: { $first: "$product_details.isle" },
-                    pallet: { $first: "$product_details.pallet" },
-                    unit: { $first: "$product_details.unit" },
-                    secondary_unit: { $first: "$product_details.secondary_unit" },
-                    storage: { $first: "$product_details.storage" },
-                    rack: { $first: "$product_details.rack" },
-                    expiry_date: { $first: "$product_details.expiry_date" },
-                    production_date: { $first: "$product_details.production_date" },
-                    batch_code: { $first: "$product_details.batch_code" },
-                    maxPerUnit: { $first: "$product_details.maxPerUnit" },
-                    roomNamed : { $first: "$room" },
-                    prod_cat: { $first: "S" },
-                    maxProducts: { $first: "$product_details.maxProducts"},
-                    CBM : { $first: { $toDouble: "$product_details.CBM" } },
-                    invoice: { $first: "$product_details.invoice" }
-                }
-            },
-        ]);
+       
 
-        if (stock_data.length > 0) {
+        
             results.push(stock_data);
-        } else if (stock_data2.length > 0) {
-            results.push(stock_data2);
-        }
+     
     }
 
     // Create an array of promises for each value
@@ -1355,144 +1413,6 @@ router.post("/barcode_scanner", async (req, res) => {
 });
 
 
-router.post("/barcode_scanner2", async(req, res) => {
-    try{
-        const { FromWareHouse, FromRoom, ToWarehouse, ToRoom, secondary_code } = req.body 
-    
-        
-        
-        const warehouse_data = await warehouse.aggregate([
-                {
-                    $match: { "name": FromWareHouse }
-                },
-                {
-                    $unwind: "$product_details"
-                },
-                {
-                    $match: { "product_details.secondary_code" : secondary_code }
-                },
-                {
-                    $group: {
-                      _id: "$product_details._id",
-                      name: { $first: "$product_details.product_name"},
-                      primary_code: { $first: "$product_details.primary_code" } ,
-                      secondary_code: { $first: "$product_details.secondary_code" } ,
-                      product_code: { $first: "$product_details.product_code" } ,
-                      instock: { $first: "$product_details.product_stock" } ,
-                      warehouse: { $first: "$name" },
-                      level: { $first: "$product_details.level" },
-                      isle: { $first: "$product_details.isle" },
-                      pallet: { $first: "$product_details.pallet" },
-                      maxProducts: { $first: "$product_details.maxProducts" },
-                      unit: { $first: "$product_details.unit" },
-                      expiry_date: { $first: "$product_details.expiry_date" },
-                      production_date: { $first: "$product_details.production_date" },
-                    }
-                },
-            
-            
-            ])
-        
-        res.status(200).json(warehouse_data)
-        
-    }catch(error){
-        res.status(404).json({ message : error.message })    
-    }
-})
-
-router.post("/barcode_scanner3", async(req, res) => {
-    try{
-        const { FromWareHouse, FromRoom, ToWarehouse, ToRoom, product_code } = req.body 
-    
-        
-        
-        const warehouse_data = await warehouse.aggregate([
-                {
-                    $match: { "name": FromWareHouse }
-                },
-                {
-                    $unwind: "$product_details"
-                },
-                {
-                    $match: { "product_details.product_code" : product_code }
-                },
-                {
-                    $group: {
-                      _id: "$product_details._id",
-                      name: { $first: "$product_details.product_name"},
-                      primary_code: { $first: "$product_details.primary_code" } ,
-                      secondary_code: { $first: "$product_details.secondary_code" } ,
-                      product_code: { $first: "$product_details.product_code" } ,
-                      instock: { $first: "$product_details.product_stock" } ,
-                      warehouse: { $first: "$name" },
-                      level: { $first: "$product_details.level" },
-                      isle: { $first: "$product_details.isle" },
-                      pallet: { $first: "$product_details.pallet" },
-                      maxProducts: { $first: "$product_details.maxProducts" },
-                      unit: { $first: "$product_details.unit" },
-                    }
-                },
-            
-            
-            ])
-        
-        res.status(200).json(warehouse_data)
-        
-    }catch(error){
-        res.status(404).json({ message : error.message })    
-    }
-})
-
-
-
-// router.post("/CheckingWarehouse", async (req, res) => {
-
-//     const {  level, isle, pallet, warehouses, room } = req.body
-
-//     try{
-//         const stock_data = await warehouse.aggregate([
-//             {
-//                 $match: { 
-//                     "name": warehouses,
-//                     "room": room
-
-//                 }
-//             },
-//             {
-//                 $unwind: "$product_details"
-//             },
-//             {
-//                 $match: {
-//                     "product_details.level" : parseInt(level),
-//                     "product_details.isle" : isle,
-//                     "product_details.pallet": parseInt(pallet),
-//                     // "product_details.product_code" : productCode,
-//                     // "product_details.secondary_code": secondaryCode,
-//                     // "product_details.primary_code" : primaryCode
-//                 }
-//             },
-//             {
-//                 $group: {
-//                     _id: "$product_details._id",
-//                     name: { $first: "$product_details.product_name"},
-//                     product_stock: { $first: "$product_details.product_stock" },
-//                     level: { $first: "$product_details.level" },
-//                     isle: { $first: "$product_details.isle" },
-//                     pallet: { $first: "$product_details.pallet" },
-//                     maxProducts: { $first: "$product_details.maxProducts" },
-//                     expiry_date: { $first: "$product_details.expiry_date" },
-//                     production_date: { $first: "$product_details.production_date" },
-//                 }
-//             },
-//         ])
-
-
-//         res.status(200).json(stock_data)
-//     }catch(error){
-//         res.status(404).json({ message: error.message })
-//     }
-
-// })
 
 
 router.post("/CheckingWarehouse", async (req, res) => {

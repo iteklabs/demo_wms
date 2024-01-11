@@ -579,11 +579,11 @@
                                                                    <tr>
                                                                        <th></th>
                                                                        <th></th>
-                                                                        <th><%= language.in_stock %> </th>
+                                                                        <th>Status</th>
                                                                         <th>Area </th>
                                                                         <th>Level </th>
                                                                         <th>Rack </th>
-                                                                        <th><%= language.quantity %>  </th>
+                                                                        <th>Status  </th>
                                                                         <th>Unit of Measure </th>
                                                                         <th>Area </th>
                                                                         <th>Level</th>
@@ -1597,7 +1597,34 @@
                 }
                     roomdataselected(x); 
             }
-            //Primary
+            
+            
+            function dataval_status(status){
+                var statusData = '';
+                switch (status) {
+                    case "S":
+                        statusData = "SOLD";
+                    break;
+
+                    case "O":
+                        statusData = "OPERATIONAL";
+                    break;
+
+                    case "NO":
+                        statusData = "NON-OPERATIONAL";
+                    break;
+
+                    case "UI":
+                        statusData = "UNDER INSPECTION";
+                    break;
+                
+                    default:
+                    break;
+                }
+
+                return statusData;
+            }
+            
             $(document).ready(function() {
                 var x = 1;
                 $('#product_code').on('keydown', function(e) {
@@ -1645,7 +1672,7 @@
                     
                     $.each(response, function(index, data1) {
                     data1.forEach((data) => {
-                    if(data.instock > 0){
+                   
                         var row = $('<tr>');
                         const levelData = data.level === null ? 0 : data.level;
                         const isleData =  data.isle === null ? 0 : data.isle;
@@ -1654,11 +1681,11 @@
                         
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 125px;" name="product_code3" id="product_code3'+ x +'" value="' + data.product_code + '" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 355px;" name="prod_name" id="prod_name'+ x +'" value="' + data.name + '" readonly>'));
-                        row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="from_prod_qty" id="from_prod_qty'+x+'" value="' + data.instock + '" readonly>'));
+                        row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="from_prod_qty" id="from_prod_qty'+x+'" value="' + dataval_status(data.status) + '" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="RoomAssigned" id="RoomAssigned'+x+'" value="'+data.roomNamed+'" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="from_prod_leveling" value="' + data.level + '" readonly>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="from_prod_level2" value="' + data.rack + '" readonly>'));
-                        row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="to_prod_qty" id="to_prod_qty'+ x +'" onkeyup="ValidationForMaxQTY('+ x +'); checkingWarehouse('+x+','+data.product_code+');">'));
+                        row.append($('<td>').html('<select class="form-control" style="width: 200px;" name="status" id="status"><option value="O">OPERATIONAL</option><option value="NO">NON-OPERATIONAL</option><option value="UI">UNDER INSPECTION</option><option value="S">SOLD</option></select>'));
                         row.append($('<td>').html('<input type="text" class="form-control" style="width: 150px;" name="unit" id="unit'+x+'" value="'+data.unit+'" readonly>'));
                         row.append($('<td>').html('<select class="form-control" name="ToRoomAssigned" id="ToRoomAssigned' + x + '" onchange="roomdataselected('+x+'); TypeList('+x+');" style="width: 150px;"></select>'));
                         row.append($('<td>').html('<select class="form-control" name="type" level="type' + x + '" id="type' + x + '" style="width: 150px;" onchange="roomdataselected('+x+')"></select>'));
@@ -1667,116 +1694,22 @@
                         
 
 
+          
+
+
                         $('<input>').attr({
                             type: 'hidden',
-                            id: 'from_prod_level',
-                            name: 'from_prod_level',
-                            value: data.isle+data.pallet 
-                        }).appendTo(row);
+                            id: 'from_status',
+                            name: 'from_status',
+                            value: data.status
+                        }).appendTo(row);     
                         
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'primary_code',
-                            name: 'primary_code',
-                            value: data.primary_code
-                        }).appendTo(row);
-                        
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'secondary_code',
-                            name: 'secondary_code',
-                            value: data.secondary_code
-                        }).appendTo(row);
-
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'primary_unit'+x,
-                            name: 'primary_unit',
-                            value: data.unit
-                        }).appendTo(row);
-                        
-                        
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'secondary_unit'+x,
-                            name: 'secondary_unit',
-                            value: data.secondary_unit
-                        }).appendTo(row);
-
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'MaxStocks_data'+x,
-                            name: 'MaxStocks_data',
-                            value: data.maxProducts
-                        }).appendTo(row);
-
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'MaxStocks_data2'+x,
-                            name: 'MaxStocks_data2',
-                            value: data.maxProducts
-                        }).appendTo(row);
-
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'storage',
-                            name: 'storage',
-                            value: data.storage
-                        }).appendTo(row);
 
                         $('<input>').attr({
                             type: 'hidden',
                             id: 'rak',
                             name: 'rak',
                             value: data.rack
-                        }).appendTo(row);
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'from_storage',
-                            name: 'from_storage',
-                            value: ""
-                        }).appendTo(row);
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'from_rak',
-                            name: 'from_rak',
-                            value: ""
-                        }).appendTo(row);
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'maxPerUnit',
-                            name: 'maxPerUnit',
-                            value: data.maxPerUnit
-                        }).appendTo(row);
-
-
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'prod_cat'+x,
-                            name: 'prod_cat',
-                            value: data.prod_cat
-                        }).appendTo(row);
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'New_Qty_Converted'+x,
-                            name: 'New_Qty_Converted',
-                            value: ""
-                        }).appendTo(row);
-
-                        $('<input>').attr({
-                            type: 'hidden',
-                            id: 'CBM',
-                            name: 'CBM',
-                            value: data.CBM
                         }).appendTo(row);
 
 
@@ -1794,13 +1727,33 @@
                             name: 'to_invoice',
                             value: Invoice_num
                         }).appendTo(row);
+
+                        $('<input>').attr({
+                            type: 'hidden',
+                            id: 'transaction_id'+x,
+                            name: 'transaction_id',
+                            value: data.idfromtransaction
+                        }).appendTo(row);  
+
+
+                        $('<input>').attr({
+                            type: 'hidden',
+                            id: 'product_id'+x,
+                            name: 'product_id',
+                            value: data.product_id
+                        }).appendTo(row);  
                         
 
-
+                        $('<input>').attr({
+                            type: 'hidden',
+                            id: 'warehouse_detl_id'+x,
+                            name: 'warehouse_detl_id',
+                            value: data.warehouse_id_detl
+                        }).appendTo(row); 
                         
                         $('#tblPage_new').append(row);
 
-                        checkingWarehouse(x, data.product_code)
+                        // checkingWarehouse(x, data.product_code)
                         
                         RoomProducts(x);
                         
@@ -1808,7 +1761,7 @@
                         // BayBin(x);
                         // BayBin2();
                         x++;
-                    }
+                    
                     
                     })
                     });
