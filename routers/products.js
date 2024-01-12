@@ -853,17 +853,21 @@ router.get("/products_export_migrate_file", auth, async (req, res) => {
         const worksheet = workbook.addWorksheet("Products"); // New Worksheet
          worksheet.columns = [
             { header: "Product_Name", key: "PName", width: 10 }, 
-            { header: "Brands", key: "PBrands", width: 10 },
-            { header: "Units", key: "PUnits", width: 10 },
-            { header: "Secondary_Units", key: "PSecondaryUnits", width: 10 },
-            { header: "max_number_per_units", key: "MaxperUnits", width: 10 },
-            { header: "Primary_Code", key: "ProductCode", width: 10 },
-            { header: "Secondary_Code", key: "ProductCode", width: 10 },
-            { header: "Product_Code", key: "ProductCode", width: 10 },
             { header: "Category", key: "PCat", width: 10 },
-            { header: "Alert_QTY", key: "PAlQty", width: 10 },
-            { header: "Maximum_Stocks", key: "PAlQty", width: 10 },
-            { header: "CBM", key: "CBM", width: 10 },
+            { header: "Brands", key: "PBrands", width: 10 },
+            { header: "Year_Model", key: "Year_Model", width: 10 },
+            { header: "Units", key: "PUnits", width: 10 },
+            { header: "Plate_Number", key: "Plate_Number", width: 10 },
+            { header: "Product_Code", key: "ProductCode", width: 10 },
+            { header: "File_number", key: "File_number", width: 10 },
+            { header: "Chasis_Number", key: "Chasis_Number", width: 10 },
+            { header: "Motor_Number", key: "Motor_Number", width: 10 },
+            { header: "OR_CR", key: "OR_CR", width: 10 },
+            { header: "Make_Series", key: "Make_Series", width: 10 },
+            { header: "Frame_Number", key: "Frame_Number", width: 10 },
+            { header: "Engine_Number", key: "Engine_Number", width: 10 },
+
+            
         ];
         
         res.setHeader(
@@ -905,21 +909,38 @@ router.post("/products_import_migrate_file", auth, uploadMigrate.single("migrate
     let workbook_response = xlsx.utils.sheet_to_json(        // Step 4
       workbook.Sheets[workbook_sheet[0]]
     );
+
     
     for (const item of workbook_response) {
       const ProductName = item["Product_Name"];
       const brand = item.Brands;
       const unit = item.Units;
-      const secondary_unit1 = item.Secondary_Units;
-      const product_code = item.Product_Code;
       const category = item.Category;
-      const AQty = item.Alert_QTY;
-      const Primary_code = item.Primary_Code;
-      const Secondary_code = item.Secondary_Code;
-      const MaxStocks = item.Maximum_Stocks;
-      const max_number_per_units = item.max_number_per_units;
-      const CBM = item.CBM;
-    
+      let product_code1 = item.Product_Code;
+
+        if (!product_code1) {
+        // Generate 10 random numbers and letters
+        const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let generatedCode = '';
+
+        for (let i = 0; i < 10; i++) {
+            const randomIndex = Math.floor(Math.random() * randomChars.length);
+            generatedCode += randomChars.charAt(randomIndex);
+        }
+        product_code1 = generatedCode;
+        }
+        console.log(product_code1);
+
+      const product_code = product_code1;
+      const Plate_Number = item.Plate_Number;
+      const File_number = item.File_number;
+      const Chasis_Number = item.Chasis_Number;
+      const Motor_Number = item.Motor_Number;
+      const OR_CR = item.OR_CR;
+      const Make_Series = item.Make_Series;
+      const Frame_Number = item.Frame_Number;
+      const Year_Model = item.Year_Model;
+      const Engine_Number = item.Engine_Number;
       try {
         let categories_data = await categories.findOne({ name: category });
         if (!categories_data) {
@@ -933,9 +954,9 @@ router.post("/products_import_migrate_file", auth, uploadMigrate.single("migrate
           brands_data = await data2.save();
         }
     
-        let units_data = await units.findOne({ name: unit, secondary_unit: secondary_unit1 });
+        let units_data = await units.findOne({ name: unit});
         if (!units_data) {
-          const data3 = new units({ name: unit, secondary_unit: secondary_unit1, products: '0' });
+          const data3 = new units({ name: unit, products: '0' });
           units_data = await data3.save();
         }
     
@@ -943,7 +964,6 @@ router.post("/products_import_migrate_file", auth, uploadMigrate.single("migrate
           name: ProductName,
           category: categories_data.name,
           brand: brands_data.name,
-          secondary_unit: units_data.secondary_unit,
           product_code: product_code
         });
         // console.log(prduct_data.length + " <> " + categories_data.name + " <> "  + brands_data.name + " <> " +  units_data.secondary_unit + " <> " + product_code + " <> " + ProductName)
@@ -954,14 +974,16 @@ router.post("/products_import_migrate_file", auth, uploadMigrate.single("migrate
             category: categories_data.name,
             brand: brands_data.name,
             unit: units_data.name,
-            alertquantity: AQty,
+            year_model: Year_Model,
             product_code: product_code,
-            secondary_unit: units_data.secondary_unit,
-            primary_code: Primary_code,
-            secondary_code: Secondary_code,
-            maxStocks: MaxStocks, 
-            maxProdPerUnit: max_number_per_units,
-            CBM:CBM
+            plate_number: Plate_Number,
+            file_number: File_number,
+            chasis_number: Chasis_Number,
+            ORCR: OR_CR, 
+            motor_number: Motor_Number,
+            make_series:Make_Series,
+            frame_number:Frame_Number,
+            engine_number:Engine_Number
           });
     
           const savedData = await data5.save();
