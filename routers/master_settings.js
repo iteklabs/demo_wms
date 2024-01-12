@@ -97,8 +97,10 @@ router.get("/:id", auth, async(req, res) => {
 router.post("/view/edit_settings", auth, upload.single("image"), async(req, res) => {
     try {
         const {site_title, currency, currency_placement, timezone} = req.body;
+        // res.json(image)
+        // return
         if (req.body.hidden == 0) {
-            
+            const image = req.file.filename;
             const master_shop_data = await master_shop.findOne()
             console.log("master_shop_data", master_shop_data);
             
@@ -113,6 +115,7 @@ router.post("/view/edit_settings", auth, upload.single("image"), async(req, res)
                 master_shop_data.currency = currency
                 master_shop_data.currency_placement = currency_placement
                 master_shop_data.timezone = timezone
+                master_shop_data.image = image
                 await master_shop_data.save()      
             }
             
