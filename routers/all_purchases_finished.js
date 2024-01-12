@@ -457,27 +457,36 @@ router.post("/view/add_purchases", auth, async (req, res) => {
         txtNote_array.forEach((value, i) => {
             newproduct[i].note = value
         })
+
+        
         
         // const Newnewproduct = newproduct.filter(obj => obj.quantity !== "0" && obj.quantity !== "");
             const data = new purchases_finished({ invoice: invoice, suppliers:suppliers, date, warehouse_name, product:newproduct, note })
             const purchases_data = await data.save()
   
             
-            const new_purchase = await purchases_finished.findOne({ id: purchases_data._id });
+            const new_purchase = await purchases_finished.findById(purchases_data._id);
+
+            // console.log(new_purchase)
             // res.json(new_purchase);
             // return;
             const promises = new_purchase.product.map( async (product_details) => {
                 var warehouse_data = await warehouse.findOne({ name: warehouse_name, room: product_details.room_name });
+               
                 var x = 0;
                 const match_data = warehouse_data.product_details.map((data) => {
+                   
                     if (data.product_name == product_details.product_name  && data.level == product_details.level && data.rack == product_details.rack  &&   data.invoice == new_purchase.invoice ) {
+                        console.log(data.product_name + " == " + product_details.product_name + " && " + data.level + " == " + product_details.level + "&&" + data.rack + "==" + product_details.rack  + " && " +    data.invoice + " == " + new_purchase.invoice)
                         data.status =  product_details.status
                         x++
                     }
     
                 })
-    
-                if (x == "0") {
+
+            //    res.json({ data: warehouse_data, varcnt: x })
+            //     return
+                if (x == 0) {
                     warehouse_data.product_details = warehouse_data.product_details.concat({ 
                         product_name: product_details.product_name, 
                         status: product_details.status, 
@@ -491,6 +500,8 @@ router.post("/view/add_purchases", auth, async (req, res) => {
                         date: product_details.date,
                         note: product_details.note
                     })
+
+                    // console.log("Data temp Inserted")
                 }
                 return warehouse_data;
             })
@@ -498,13 +509,13 @@ router.post("/view/add_purchases", auth, async (req, res) => {
             .then(async (updatedWarehouseDataArray) => {
             
                 try {
+                    
                     for (const warehouseData of updatedWarehouseDataArray) {
                         await warehouse.updateOne({ _id: warehouseData._id }, {
                                 $addToSet: {
                                     product_details: { $each: warehouseData.product_details }
                                 }
                           });
-                       
                     }
 
                 } catch (error) {
