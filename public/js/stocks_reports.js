@@ -168,6 +168,36 @@ function LogicDropdown(){
     return data;
   }
 
+
+
+  function resStatus(status){
+    var statusData ='';
+    switch (status) {
+        case "S":
+            statusData = "SOLD";
+        break;
+
+        case "O":
+            statusData = "OPERATIONAL";
+        break;
+
+        case "NO":
+            statusData = "NON-OPERATIONAL";
+        break;
+
+        case "UI":
+            statusData = "UNDER INSPECTION";
+        break;
+    
+        default:
+        break;
+    }
+
+
+    return statusData;
+}
+
+
   $('#filter').click(function(){
 
     var warehouse_value = $('#warehouse').val();
@@ -203,26 +233,25 @@ function LogicDropdown(){
                 dataItem +='<thead>';
                 dataItem +='<tr class="table-dark">';
                 dataItem +='<th scope="col"><h5>Name</h5></th>';
-                dataItem +='<th scope="col"><h5>Room</h5></th>';
+                
                 dataItem +='<th scope="col"><h5>Item Code</h5></th>';
-                dataItem +='<th><h5>Item Description</h5></th>';
-                dataItem +='<th><h5>Primary Barcode</h5></th>';
-                dataItem +='<th><h5>Secondary barcode</h5></th>';
+                dataItem +='<th scope="col"><h5>Frame Number</h5></th>';
+                dataItem +='<th scope="col"><h5>Engine Number</h5></th>';
                 dataItem +='<th><h5>Unit of Measure</h5></th>';
-                dataItem +='<th><h5>Secondary Unit</h5></th>';
-                dataItem +='<th><h5>Batch Code</h5></th>';
-                dataItem +='<th><h5>Production Date</h5></th>';
-                dataItem +='<th><h5>Expiry Date</h5></th>';
-                dataItem +='<th><h5>Stock Quantity</h5></th>';
+                dataItem +='<th><h5>Status</h5></th>';
+                dataItem +='<th><h5>Date</h5></th>';
+                dataItem +='<th><h5>Remarks</h5></th>';
                 dataItem +='<th><h5>Level</h5></th>';
-                dataItem +='<th><h5>Location</h5></th>';
+                dataItem +='<th><h5>Rack</h5></th>';
+
+                dataItem +='<th scope="col"><h5>Room</h5></th>';
                 dataItem +='</tr>';
                 dataItem +='</thead>';
                 dataItem +='<tbody>';
 
                 
                 response.forEach(element => {
-                    console.log(element)
+                    console.log(element.product_details.status)
                     
 
                 
@@ -234,32 +263,29 @@ function LogicDropdown(){
                     var warehouse_room = element.room !== undefined ? element.room :"";
                     var itemcode = element.product_details.product_code !== undefined ? element.product_details.product_code :"";
                     var itemdesc = element.product_details.product_name !== undefined ? element.product_details.product_name :"";
-                    var primarycode = element.product_details.primary_code !== undefined ? element.product_details.primary_code :"";
-                    var secondarycode = element.product_details.secondary_code !== undefined ? element.product_details.secondary_code :"";
-                    var expirydate = element.product_details.expiry_date !== undefined ? element.product_details.expiry_date :"No Date";
-                    var productiondate = element.product_details.production_date !== undefined ? element.product_details.production_date :"No Date";
+               
 
                     var UOM = element.product_details.unit !== undefined ? element.product_details.unit :"";
-                    var SndUOM = element.product_details.secondary_unit !== undefined ? element.product_details.secondary_unit :"";
-                    var BatchCodes = element.product_details.product_stock !== undefined ? element.product_details.product_stock :"";
+                    var dateData = element.product_details.date !== undefined ? element.product_details.date : "No Date";
+                    var noteData = element.product_details.note !== undefined ? element.product_details.note :"";
+                    var levelData = element.product_details.level !== undefined ? element.product_details.level :"";
+                    var rackData = element.product_details.rack !== undefined ? element.product_details.rack :"";
 
-                
+                    var FrameNumberData = element.product_data[0].frame_number !== undefined ? element.product_data[0].frame_number : "No Frame Number";
+                    var EngineNumberData = element.product_data[0].engine_number !== undefined ? element.product_data[0].engine_number : "No Engine Number";
+                    var statusData = resStatus(element.product_details.status);
                     dataItem +='<tr>';
-                    // dataItem +='<td class="text-nowrap" ><h5>'+ warehouse_cat+'</h5></td>';
-                    dataItem +='<td class="text-nowrap" ><h5>'+ warehouse_name +'</h5></td>';
-                    dataItem +='<td class="text-nowrap" ><h5>'+ warehouse_room +'</h5></td>';
-                    dataItem +='<td class="text-nowrap" ><h5>'+ itemcode +'</h5></td>';
                     dataItem +='<td class="text-nowrap"><h5>'+ itemdesc +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ primarycode +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ secondarycode +'</h5></td>';
+                    dataItem +='<td class="text-nowrap" ><h5>'+ itemcode +'</h5></td>';
+                    dataItem +='<td class="text-nowrap" ><h5>'+ FrameNumberData +'</h5></td>';
+                    dataItem +='<td class="text-nowrap" ><h5>'+ EngineNumberData +'</h5></td>';
                     dataItem +='<td class="text-nowrap"><h5>'+ UOM +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ SndUOM +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ BatchCodes +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ productiondate +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ expirydate +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ element.product_details.product_stock +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ element.product_details.level +'</h5></td>';
-                    dataItem +='<td class="text-nowrap"><h5>'+ binlocation +'</h5></td>';
+                    dataItem +='<td class="text-nowrap"><h5>'+ statusData +'</h5></td>';
+                    dataItem +='<td class="text-nowrap"><h5>'+ dateData +'</h5></td>';
+                    dataItem +='<td class="text-nowrap"><h5>'+ noteData +'</h5></td>';
+                    dataItem +='<td class="text-nowrap"><h5>'+ levelData +'</h5></td>';
+                    dataItem +='<td class="text-nowrap"><h5>'+ rackData +'</h5></td>';
+                    dataItem +='<td class="text-nowrap"><h5>'+ warehouse_room +'</h5></td>';
                     dataItem +='</tr>';
                     
 

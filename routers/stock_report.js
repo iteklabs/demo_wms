@@ -9,19 +9,32 @@ const users = require("../public/language/languages.json");
 router.get("/view", auth, async (req, res) => {
     try {
         const role_data = req.user
-        console.log("role_data", req.user);
+        // console.log("role_data", req.user);
         
         const profile_data = await profile.findOne({email : role_data.email})
 
         const master = await master_shop.find()
-        console.log("master" , master);
+        // console.log("master" , master);
 
-        const warehouse_data = await warehouse.find({})
+        const warehouse_data = await warehouse.aggregate([
+            {
+                $match: { 
+                    "status" : 'Enabled',
+                    "name": { $ne: "Return Goods" }
+                }
+            },
+            {
+                $group: {
+                    _id: "$name",
+                    name: { $first: "$name"}
+                }
+            },
+        ])
         const product_data = await product.find({})
     
         if (master[0].language == "English (US)") {
             var lan_data = users.English
-            console.log(lan_data);
+            // console.log(lan_data);
         } else if(master[0].language == "Hindi") {
             var lan_data = users.Hindi
 
@@ -300,29 +313,105 @@ router.post("/Reports", async (req, res)=> {
     let warehouse_data;
     if(warehouseNew == "All"){
         if(rooms == "All"){
+            // warehouse_data = await warehouse.aggregate([
+            //     {
+            //         $unwind: "$product_details"
+            //     },
+            //     {
+            //         $match:{
+            //             "product_details.type": Type,
+            //         }
+            //     },
+            //     {
+            //         $sort: { 
+            //             "warehouse_category": 1,
+            //             "product_details.bay": 1 
+                        
+            //         }
+            //     },
+            //     {
+            //         $lookup: {
+            //             from: "products", // Name of the other collection
+            //             localField: "product_details.product_id",
+            //             foreignField: "_id", // Adjust based on the actual field in the products collection
+            //             as: "product_data"
+            //         }
+            //     }
+            // ]);
+
+
             warehouse_data = await warehouse.aggregate([
+                
                 {
                     $unwind: "$product_details"
                 },
                 {
-                    $match:{
+                    $match: {
                         "product_details.type": Type,
-                        "product_details.product_stock": { $gt: 0 } 
+                        // "product_details.product_stock": { $gt: 0 } 
                     }
                 },
                 {
-                    $sort: { 
+                    $sort: {
                         "warehouse_category": 1,
-                        "product_details.bay": 1 
-                        
+                        "product_details.bay": 1
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "products", // Name of the other collection
+                        let: { product_id_str: "$product_details.product_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$_id", { $toObjectId: "$$product_id_str" }]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "product_data"
                     }
                 }
             ]);
 
         }else{
+            // warehouse_data = await warehouse.aggregate([
+            //     {
+            //         $match:{
+            //             room: rooms,
+            //         }
+            //     },
+            //     {
+            //         $unwind: "$product_details"
+            //     },
+            //     {
+            //         $match:{
+            //             "product_details.type": Type,
+            //             // "product_details.product_stock": { $gt: 0 } 
+            //         }
+            //     },
+            //     {
+            //         $sort: { 
+            //             "warehouse_category": 1,
+            //             "product_details.bay": 1 
+                        
+            //         }
+            //     },
+            //     {
+            //         $lookup: {
+            //             from: "products", // Name of the other collection
+            //             localField: "product_details.product_id",
+            //             foreignField: "_id", // Adjust based on the actual field in the products collection
+            //             as: "product_data"
+            //         }
+            //     }
+            // ]);
+
+
             warehouse_data = await warehouse.aggregate([
                 {
-                    $match:{
+                    $match: {
                         room: rooms,
                     }
                 },
@@ -330,16 +419,31 @@ router.post("/Reports", async (req, res)=> {
                     $unwind: "$product_details"
                 },
                 {
-                    $match:{
+                    $match: {
                         "product_details.type": Type,
-                        "product_details.product_stock": { $gt: 0 } 
+                        // "product_details.product_stock": { $gt: 0 } 
                     }
                 },
                 {
-                    $sort: { 
+                    $sort: {
                         "warehouse_category": 1,
-                        "product_details.bay": 1 
-                        
+                        "product_details.bay": 1
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "products", // Name of the other collection
+                        let: { product_id_str: "$product_details.product_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$_id", { $toObjectId: "$$product_id_str" }]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "product_data"
                     }
                 }
             ]);
@@ -349,7 +453,7 @@ router.post("/Reports", async (req, res)=> {
         if(rooms == "All"){
             warehouse_data = await warehouse.aggregate([
                 {
-                    $match:{
+                    $match: {
                         name: warehouseNew,
                     }
                 },
@@ -357,24 +461,73 @@ router.post("/Reports", async (req, res)=> {
                     $unwind: "$product_details"
                 },
                 {
-                    $match:{
+                    $match: {
                         "product_details.type": Type,
-                        "product_details.product_stock": { $gt: 0 } 
+                        // "product_details.product_stock": { $gt: 0 } 
                     }
                 },
                 {
-                    $sort: { 
+                    $sort: {
                         "warehouse_category": 1,
-                        "product_details.bay": 1 
-                        
+                        "product_details.bay": 1
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "products", // Name of the other collection
+                        let: { product_id_str: "$product_details.product_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$_id", { $toObjectId: "$$product_id_str" }]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "product_data"
                     }
                 }
             ]);
-
+            
         }else{
+            // warehouse_data = await warehouse.aggregate([
+            //     {
+            //         $match:{
+            //             name: warehouseNew,
+            //             room: rooms,
+            //         }
+            //     },
+            //     {
+            //         $unwind: "$product_details"
+            //     },
+            //     {
+            //         $match:{
+            //             "product_details.type": Type,
+            //             // "product_details.product_stock": { $gt: 0 } 
+            //         }
+            //     },
+            //     {
+            //         $sort: { 
+            //             "warehouse_category": 1,
+            //             "product_details.bay": 1 
+                        
+            //         }
+            //     },
+            //     {
+            //         $lookup: {
+            //             from: "products", // Name of the other collection
+            //             localField: "product_details.product_id",
+            //             foreignField: "_id", // Adjust based on the actual field in the products collection
+            //             as: "product_data"
+            //         }
+            //     }
+            // ]);
+
+
             warehouse_data = await warehouse.aggregate([
                 {
-                    $match:{
+                    $match: {
                         name: warehouseNew,
                         room: rooms,
                     }
@@ -383,16 +536,31 @@ router.post("/Reports", async (req, res)=> {
                     $unwind: "$product_details"
                 },
                 {
-                    $match:{
+                    $match: {
                         "product_details.type": Type,
-                        "product_details.product_stock": { $gt: 0 } 
+                        // "product_details.product_stock": { $gt: 0 } 
                     }
                 },
                 {
-                    $sort: { 
+                    $sort: {
                         "warehouse_category": 1,
-                        "product_details.bay": 1 
-                        
+                        "product_details.bay": 1
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "products", // Name of the other collection
+                        let: { product_id_str: "$product_details.product_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$_id", { $toObjectId: "$$product_id_str" }]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "product_data"
                     }
                 }
             ]);

@@ -238,56 +238,39 @@
                                          
                                 </div>
                                 
-                                <div class="card-header" style="display: flex; flex-direction: column; align-items: center;">
+                            <div class="card-header" style="display: flex; flex-direction: column; align-items: center;">
+                              <div class="container">
                                 <div class="row">
-                                    <div class="mb-4 col-md-5">
-                                        <label for="warrehouse">Warehouse <span class="text-red">*</span> </label>
-                                        <select class="form-control" name="warehouse" id="warehouse" required>
-                                           
-                                            <% warehouse.forEach((data)=> { %>
-                                            <option value="<%= data.name %>"><%= data.name %></option>
-                                            <% }) %>
-                                        </select>
-                                    </div>
-                                    
-                                    
-                                    <div class="mb-4 col-md-5">
-                                        <label for="warrehouse">Room <span class="text-red">*</span> </label>
-                                        <select class="form-control" name="room" id="room" required>
-                                            <option value="Rack 1" >Rack 1</option>
-                                            <option value="Rack 2" >Rack 2</option>
-                                            <option value="Parts" >Parts</option>
-                                        </select>
-                                    </div>
-                                    
-                                  
-                                    <div class="mb-4 col-md-5">
-                                        <label for="warrehouse">Level <span class="text-red">*</span> </label>
-                                        <select class="form-control" name="level" id="level" required>
-                                        
-                                            <option value="1" >One</option>
-                                            <option value="2" >Two</option>
-                                            <option value="3" >Three</option>
+                                  <div class="mb-3 col-md-4">
+                                      <label for="warrehouse">Warehouse <span class="text-red">*</span> </label>
+                                      <select class="form-control" name="warehouse" id="warehouse" required>
+                                         
+                                          <% warehouse.forEach((data)=> { %>
+                                          <option value="<%= data.name %>"><%= data.name %></option>
+                                          <% }) %>
+                                      </select>
+                                  </div>
+                                  <div class="mb-3 col-md-4">
+                                      <label for="warrehouse">Room <span class="text-red">*</span> </label>
+                                      <select class="form-control" name="room" id="room" required>
+                                          <option value="Rack 1" >Rack 1</option>
+                                          <option value="Rack 2" >Rack 2</option>
+                                          <option value="Parts" >Parts</option>
+                                      </select>
+                                  </div>
+                                  <div class="mb-3 col-md-4">
+                                      <label for="warrehouse">Level <span class="text-red">*</span> </label>
+                                      <select class="form-control" name="level" id="level" required>
                                       
-                                        </select>
-                                    </div>
-
-
-                                    <!-- <div class="mb-3 col-md-3">
-                                        <label for="warrehouse">Isle <span class="text-red">*</span> </label>
-                                        <select class="form-control" name="isle" id="isle" required>
-                                            <option value="ALL" >All</option>
-                                            <option value="A" >A</option>
-                                            <option value="B" >B</option>
-                                            <option value="C" >C</option>
-                                            <option value="D" >D</option>
-                                        </select>
-                                    </div> -->
+                                          <option value="1" >One</option>
+                                          <option value="2" >Two</option>
+                                          <option value="3" >Three</option>
                                     
-
-
-
-                                </div> 
+                                      </select>
+                                  </div>
+                              </div> 
+                              </div>
+                                
                                 
                                 <div class="row">
                                     <button type="submit" class="btn btn-primary w-100" id="filterButton">Generate</button>
@@ -381,7 +364,7 @@
         var data = {};
 
         jsonData.forEach((item) => {
-          console.log("asdad", item)
+          // console.log("asdad", item)
           var rack = item.rack;
           var count = dataval_status(item.status);
           var image = item.image;
@@ -480,10 +463,12 @@
 
                           
                           if(DataRes[dataIsle[i]]){
-                            // console.log(DataRes)
-                            var countQTY = DataRes[dataIsle[i]].palletCount;
+                            // console.log( "bilang: ",response[i].products.length)
+                            var countQTY = DataRes[dataIsle[i]].palletCount.length;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -493,7 +478,6 @@
                               dataItems += '<input type="hidden" id="images'+i+dataIsle[i]+'" value="'+DataRes[dataIsle[i]].images+'" />';
                             
                             dataItems += '</td>';
-                            //console.log(DataRes[dataIsle[i]].palletCount)
                           }else{
                             dataItems += '<td>'+0+'</td>';
                           }
@@ -508,105 +492,8 @@
                           dataItems += '<td class="minimal"></td>';
                         }
                         dataItems += '</tr>';
-
-                        //dataIsle.length
                         dataBody.append(dataItems);
 
-      
-                        // dataIsle.forEach(function(isleItem) {
-                        //   var dataItems = '';
-                        //   const IsleData = isleItem;
-                        
-                        //   dataItems = '<tr><td rowspan="3"><strong><h1>' + isleItem + '</h1></strong></td></tr>';
-                        
-                        //   let columnCount = 54;
-                        
-                        //   for (let i = j; i < j + columnCount; i++) {
-                        //     dataItems += '<td><h4>' + i + '</h4></td>';
-                        //   }
-                        
-                        //   dataItems += '</tr><tr>';
-
-                        //   for (let i = j; i < j + columnCount; i++) {
-                        //     if (DataRes[IsleData] && DataRes[IsleData][i]) {
-                              
-                        //       if(DataRes[IsleData][i] >= 500){
-                        //         color = "Tomato";
-                        //       }else if(DataRes[IsleData][i] >= 250){
-                        //         color = "yellow";
-                        //       }else{
-                        //        color = "white";
-                        //       }
-
-                        //       // const numberOfProducts = DataRes.prd_data_name[IsleData][i].length;
-
-                        //       const numberOfProducts = DataRes[IsleData][i].productData.length
-                              
-
-                        //       if (!datahoverItem[IsleData]) {
-                        //         datahoverItem[IsleData] = {};
-                        //       }
-
-                        //       datahoverItem[IsleData][i] = '';
-                        //       for (var x = 0; x <= numberOfProducts - 1; x++) {
-
-                        //         if(DataRes && DataRes[IsleData][i].productData[x].product_name){
-                                  
-                        //           datahoverItem[IsleData][i] += '<tr>';
-
-                        //           datahoverItem[IsleData][i]  += '<td>';
-                        //           datahoverItem[IsleData][i]  += DataRes[IsleData][i].productData[x].product_code;
-                        //           datahoverItem[IsleData][i] += '</td>';
-
-                                  
-                                  
-                        //           datahoverItem[IsleData][i]  += '<td>';
-                        //           datahoverItem[IsleData][i]  += DataRes[IsleData][i].productData[x].product_name;
-                        //           datahoverItem[IsleData][i] += '</td>';
-
-                        //           datahoverItem[IsleData][i] += '<td>';
-                        //           datahoverItem[IsleData][i]  += DataRes[IsleData][i].productData[x].product_quantity;
-                        //           datahoverItem[IsleData][i]  += '</td>';
-
-                        //           datahoverItem[IsleData][i]  += '</tr>';
-
-                        //         }
-                        //       }
-
-                                                          
-                        //       const NumTotal = Math.round(DataRes[IsleData][i].palletCount * 1000) / 1000;
-                        //       dataItems += '<td class="center button-text contactme"  data-has-data="' + (datahoverItem[IsleData][i]  ? true : false) + '" bgcolor="'+color+'"><b style="color:black">' + NumTotal + '</b><div class="emailcontainer"><table style="width: 100%;"><thead><tr><td>Item Code</td><td>Product Name</td><td>Qty</td></tr></thead><tbody>'+datahoverItem[IsleData][i] +'</tbody></table></div></td>';
-                             
-                        //     } else {
-                        //       dataItems += '<td>&nbsp;</td>';
-                        //     }
-                        //   }
-                        //   dataItems += '</tr>';
-                        
-                        //   // dataItems += '</tr><tr style="height: 5px;">';
-                        
-                        //   // for (let i = j; i < j + columnCount; i++) {
-                        //   //   dataItems += '<td>&nbsp;</td>';
-                        //   // }
-                        
-                        //   j += columnCount; // Update j based on the range
-                        
-                        //   // dataItems += "</tr>";
-
-                        //   $(document).ready(function () {
-                        //   $(".button-text.contactme").hover(function () {
-                        //         // alert($(this).data("has-data"))
-                        //           if ($(this).data("has-data") === true) {
-                        //               $(this).find('.emailcontainer').show('slow');
-                        //           }
-                        //       }, function () {
-                        //           $(this).find('.emailcontainer').hide('slow');
-                        //       });
-                        //   });
-                        
-                        //   dataBody.append(dataItems);
-                        // });
-            
                     }else if(level_value == "2"){
                         
                         let j = 1;
@@ -631,7 +518,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -684,7 +573,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -739,7 +630,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -791,7 +684,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -843,7 +738,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -898,7 +795,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal( '+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -950,7 +849,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
@@ -1002,7 +903,9 @@
                             console.log(DataRes)
                             var countQTY = DataRes[dataIsle[i]].palletCount;
                             var productDataView = DataRes[dataIsle[i]].productData;
-                            dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                            var countProducts = response[i].products.length;
+                            // dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countQTY;
+                              dataItems += '<td onclick="showModal('+i+', \''+dataIsle[i]+'\')">'+countProducts;
                               productDataView.forEach(function(dataval){
                                 dataItems += '<input type="hidden" id="product_code'+i+dataIsle[i]+'" value="'+dataval.product_code+'" />';
                                 dataItems += '<input type="hidden" id="product_quantity'+i+dataIsle[i]+'" value="'+dataval.product_quantity+'" />';
